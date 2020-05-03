@@ -49,28 +49,51 @@ router.post('/', function (req, res) {
     var is_user = false;
     user.findOne({where: {email: response.email}})
         .then((user) => {
-            if(user !=null){
+            if (user != null) {
                 console.log("유저가 이미 있습니다.")
                 is_user = true;
             }
-        })
-        .catch(err =>{
+        }).then(()=>{
+            if (is_user == false){
+                user.create({
+                    email: response.email,
+                    password: response.password,
+                    sex: response.sex,
+                    age: response.age,
+                    created_at: response.created_at,
+                    is_face_detection: response.is_face_detection,
+                    weight: response.weight})
+            }
+        }
+    )
+        .catch(err => {
             user.create({
-                        email: response.email,
-                        password: response.password,
-                        sex: response.sex,
-                        age: response.age,
-                        created_at: response.created_at,
-                        is_face_detection: response.is_face_detection,
-                        weight: response.weight
+                email: response.email,
+                password: response.password,
+                sex: response.sex,
+                age: response.age,
+                created_at: response.created_at,
+                is_face_detection: response.is_face_detection,
+                weight: response.weight
 
-                    }).then(result => {
-                        console.log("유저 생성 완료");
-                    }).catch(err => {
-                        console.log("유저 생성 실패");
-                        console.log(err);
-                    });
+            }).then(result => {
+                console.log("유저 생성 완료");
+            }).catch(err => {
+                console.log("유저 생성 실패");
+                console.log(err);
+            });
         });
+    if (user == null) {
+        user.create({
+            email: response.email,
+            password: response.password,
+            sex: response.sex,
+            age: response.age,
+            created_at: response.created_at,
+            is_face_detection: response.is_face_detection,
+            weight: response.weight
+        })
+    }
 
     // user.findOrCreate({where: {email: response.email}})
     //     .spread((user, created) => {
