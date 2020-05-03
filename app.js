@@ -8,9 +8,10 @@ const graphqlHTTP = require('express-graphql');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var {GraphQLSchema} = require('graphql');
+var bodyParser = require('body-parser');
 
 var options = {
-    exclude: ["Users"]
+    exclude: ["users"]
 };
 const {generateSchema} = require('sequelize-graphql-schema')(options);
 
@@ -28,9 +29,9 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(bodyParser.json());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
 
 app.use('/graphql', graphqlHTTP({
     schema: new GraphQLSchema(generateSchema(models)),
