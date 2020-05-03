@@ -31,6 +31,21 @@ router.get('/', function (req, res, next) {
     res.redirect('graphql?query={userGet{id,email}}');
 });
 
+router.post('/emailcheck', function (req, res) {
+    var email = req.body.email;
+
+    user.findOne({where: {email: email}})
+        .then((user) =>{
+            if(user!=null){
+                res.send(500);
+                return;
+            }else{
+                res.send(200);
+                return;
+            }
+        })
+});
+
 router.post('/', function (req, res) {
     let salt = Math.round((new Date().valueOf()) * Math.random()) + "";
 
