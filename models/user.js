@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.STRING(30),
         },
-        password: {
-            allowNull: false,
-            type: DataTypes.STRING(256),
-        },
+        // password: {
+        //     allowNull: false,
+        //     type: DataTypes.STRING(256),
+        // },
         sex: {
             allowNull: false,
             type: DataTypes.STRING(10),
@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER
         },
         is_face_detection: {
+            allowNull: true,
+            type: DataTypes.BOOLEAN
+        },
+        is_email_login: {
             allowNull: true,
             type: DataTypes.BOOLEAN
         },

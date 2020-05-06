@@ -31,6 +31,9 @@ router.get('/', function (req, res, next) {
     res.redirect('graphql?query={userGet{id,email}}');
 });
 
+//TODO : 이메일 비밀번호 찾기
+
+
 router.post('/emailcheck', function (req, res) {
     var email = req.body.email;
 
@@ -52,12 +55,13 @@ router.post('/', function (req, res) {
     let response = {
         email: req.body.email,
         // password: crypto.createHash("sha256").update(req.body.password + salt).digest("hex"),
-        password: encrypt(req.body.password),
+        // password: encrypt(req.body.password),
         sex: req.body.sex,
         age: req.body.age,
         created_at: Date.now(),
         is_face_detection: false,
         weight: 1,
+        is_email_login: req.body.is_email_login,
 
     };
 
@@ -69,27 +73,31 @@ router.post('/', function (req, res) {
                 is_user = true;
             }
         }).then(()=>{
+        console.log("유저 생성 완료 : "+response.email);
             if (is_user == false){
                 user.create({
                     email: response.email,
-                    password: response.password,
+                    // password: response.password,
                     sex: response.sex,
                     age: response.age,
                     created_at: response.created_at,
                     is_face_detection: response.is_face_detection,
-                    weight: response.weight})
+                    weight: response.weight,
+                    is_email_login: response.is_email_login,
+                })
             }
         }
     )
         .catch(err => {
             user.create({
                 email: response.email,
-                password: response.password,
+                // password: response.password,
                 sex: response.sex,
                 age: response.age,
                 created_at: response.created_at,
                 is_face_detection: response.is_face_detection,
-                weight: response.weight
+                weight: response.weight,
+                is_email_login: response.is_email_login,
 
             }).then(result => {
                 console.log("유저 생성 완료");
@@ -101,12 +109,13 @@ router.post('/', function (req, res) {
     if (user == null) {
         user.create({
             email: response.email,
-            password: response.password,
+            // password: response.password,
             sex: response.sex,
             age: response.age,
             created_at: response.created_at,
             is_face_detection: response.is_face_detection,
-            weight: response.weight
+            weight: response.weight,
+            is_email_login: response.is_email_login,
         })
     }
 
