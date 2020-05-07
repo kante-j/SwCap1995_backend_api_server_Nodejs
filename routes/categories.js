@@ -10,5 +10,6 @@ router.get('/', function (req, res) {
 
 router.get('/search', function (req, res) {
     res.send(req.query.query);
+    console.log(req);
 });
 module.exports = router;
