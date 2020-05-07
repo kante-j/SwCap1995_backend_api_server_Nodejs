@@ -34,7 +34,7 @@ router.get('/', function (req, res, next) {
 //TODO : 이메일 비밀번호 찾기
 
 
-router.post('/emailcheck', function (req, res) {
+router.post('/is_user', function (req, res) {
     var email = req.body.email;
 
     user.findOne({where: {email: email}})
@@ -44,6 +44,21 @@ router.post('/emailcheck', function (req, res) {
                 return;
             }else{
                 res.send(200);
+                return;
+            }
+        })
+});
+
+router.post('/emailcheck', function (req, res) {
+    var email = req.body.email;
+
+    user.findOne({where: {email: email}})
+        .then((user) =>{
+            if(user.is_email_login == 1){
+                res.send(200);
+                return;
+            }else{
+                res.send(500);
                 return;
             }
         })
@@ -119,34 +134,6 @@ router.post('/', function (req, res) {
         })
     }
 
-    // user.findOrCreate({where: {email: response.email}})
-    //     .spread((user, created) => {
-    //         console.log(user.get({
-    //             plain: true
-    //         }))
-    //         console.log(created)
-    //     })
-
-    // if(is_user == false) {
-    //     user.create({
-    //         email: response.email,
-    //         password: response.password,
-    //         sex: response.sex,
-    //         age: response.age,
-    //         created_at: response.created_at,
-    //         is_face_detection: response.is_face_detection,
-    //         weight: response.weight
-    //
-    //     }).then(result => {
-    //         console.log("유저 생성 완료");
-    //     }).catch(err => {
-    //         console.log("유저 생성 실패");
-    //         console.log(err);
-    //     });
-    // }
-
-
-    // console.log(response);
 
     res.redirect("/")
 
