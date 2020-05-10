@@ -8,6 +8,7 @@ const graphqlHTTP = require('express-graphql');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
+var friendsRouter = require('./routes/friends');
 var {GraphQLSchema} = require('graphql');
 var bodyParser = require('body-parser');
 
@@ -34,6 +35,7 @@ app.use(bodyParser.json());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/categories', categoriesRouter);
+app.use('/friends', friendsRouter);
 
 app.use('/graphql', graphqlHTTP({
     schema: new GraphQLSchema(generateSchema(models)),
