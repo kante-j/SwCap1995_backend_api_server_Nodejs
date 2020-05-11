@@ -9,7 +9,9 @@ const models= require('../models');
 //     res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
 // });
 
-router.get('/list/:user_id', function (req, res) {
+
+
+router.get('/:user_id', function (req, res) {
 
     console.log("Qweqwe");
     // friend.findAll({where:{
@@ -20,19 +22,34 @@ router.get('/list/:user_id', function (req, res) {
     //     console.log(err);
     // });
 
-    models.friend.findAll({
+    // models.friend.findAndCountAll({
+    //     where:{
+    //         user_id: req.params.user_id
+    //     },
+    //     include:[{
+    //         model: models.user,
+    //         as: "user",
+    //
+    //     }],
+    //
+    // }).then((users) =>{
+    //     console.log(JSON.stringify(users));
+    // });
+
+    models.user.findAndCountAll({
         include:[{
-            model: models.user,
-            as: "user",
-
+            model: models.friend,
+            as: "friend",
+            attributes: ['user_id', 'friend_id'],
+            where:{
+                user_id: req.params.user_id,
+            },
         }],
-        where:{
-            user_id: req.params.user_id
-        },
 
-        attributes: ['nickname'],
     }).then((user) =>{
-        console.log(user);
+        res.send(user);
+    }).catch(err =>{
+        res.send(500);
     });
 
     // models.user.findAll({
@@ -51,7 +68,6 @@ router.get('/list/:user_id', function (req, res) {
     // }).then((user) =>{
     //     console.log(user);
     // });
-    console.log("Qweqwe11");
 
     // res.redirect('query{\n' +
     //     '  friendGet(where : {\n' +
