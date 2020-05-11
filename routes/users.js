@@ -33,6 +33,20 @@ router.get('/', function (req, res, next) {
 
 //TODO : 이메일 비밀번호 찾기
 
+router.post('/is_nickname', function (req, res) {
+    var nickname = req.body.nickname;
+
+    user.findOne({where: {nickname: nickname}})
+        .then((user) =>{
+            if(user!=null){
+                res.send(500);
+                return;
+            }else{
+                res.send(200);
+                return;
+            }
+        })
+});
 
 router.post('/is_user', function (req, res) {
     var email = req.body.email;

@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             type: DataTypes.INTEGER,
         },
+        nickname:{
+            type: DataTypes.STRING(30),
+        },
         weight: {
             allowNull: true,
             type: DataTypes.INTEGER,
