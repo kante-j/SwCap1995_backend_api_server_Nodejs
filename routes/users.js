@@ -50,11 +50,18 @@ router.post('/is_nickname', function (req, res) {
 
 router.post('/is_user', function (req, res) {
     var email = req.body.email;
+    console.log("11")
+    var returnUID ={};
 
     user.findOne({where: {email: email}})
         .then((user) =>{
+
+            console.log("asd")
             if(user!=null){
-                res.send(500);
+                returnUID['id'] = user.id;
+                console.log(returnUID)
+                res.send(returnUID);
+                // res.send(500);
                 return;
             }else{
                 res.send(200);

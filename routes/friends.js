@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
-const {friend} = require('../models');
-const {user} = require('../models/user');
+const models= require('../models');
+// const {user} = require('../models');
 
 
 // router.get('/', function (req, res) {
@@ -12,13 +12,45 @@ const {user} = require('../models/user');
 router.get('/list/:user_id', function (req, res) {
 
     console.log("Qweqwe");
-    friend.findAll({where:{
-        user_id: req.params.user_id
-        }}).then((friend) =>{
-            console.log(friend)
-    }).catch(err =>{
-        console.log(err);
+    // friend.findAll({where:{
+    //     user_id: req.params.user_id
+    //     }}).then((friend) =>{
+    //         console.log(friend[1])
+    // }).catch(err =>{
+    //     console.log(err);
+    // });
+
+    models.friend.findAll({
+        include:[{
+            model: models.user,
+            as: "user",
+
+        }],
+        where:{
+            user_id: req.params.user_id
+        },
+
+        attributes: ['nickname'],
+    }).then((user) =>{
+        console.log(user);
     });
+
+    // models.user.findAll({
+    //     include:[
+    //         {
+    //             model: models.friend,
+    //             as: "friend",
+    //             where:{ user_id: req.params.user_id}
+    //         },
+    //     ],
+    //     // where:{
+    //     //     'friend':{
+    //     //         user_id: req.params.user_id
+    //     //     }
+    //     // }
+    // }).then((user) =>{
+    //     console.log(user);
+    // });
     console.log("Qweqwe11");
 
     // res.redirect('query{\n' +
