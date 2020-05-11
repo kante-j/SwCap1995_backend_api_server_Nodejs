@@ -5,21 +5,20 @@ const {friend} = require('../models');
 const {user} = require('../models/user');
 
 
-router.get('/', function (req, res) {
-    res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
-});
+// router.get('/', function (req, res) {
+//     res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
+// });
 
-router.get('/:user_id', function (req, res) {
+router.get('/list/:user_id', function (req, res) {
 
     console.log("Qweqwe");
     friend.findAll({where:{
         user_id: req.params.user_id
-        }}).then((user) =>{
-            console.log(user)
+        }}).then((friend) =>{
+            console.log(friend)
     }).catch(err =>{
         console.log(err);
     });
-
     console.log("Qweqwe11");
 
     // res.redirect('query{\n' +
