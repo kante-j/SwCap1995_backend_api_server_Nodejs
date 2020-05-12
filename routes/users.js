@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const crypto = require('crypto');
-const {user} = require('../models');
+const {user, friend} = require('../models');
 const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
@@ -28,12 +28,14 @@ function decrypt(text) {
 }
 
 router.get('/', function (req, res, next) {
+    console.log(Date.now());
     res.redirect('graphql?query={userGet{id,email}}');
 });
 
 //TODO : 이메일 비밀번호 찾기
 
 router.post('/is_nickname', function (req, res) {
+    console.log(Date.now());
     var nickname = req.body.nickname;
 
     user.findOne({where: {nickname: nickname}})
@@ -48,15 +50,16 @@ router.post('/is_nickname', function (req, res) {
         })
 });
 
+
+// 유저이메일로 유저 테이블에 유저가 있는 지 없는지 확인
 router.post('/is_user', function (req, res) {
+    console.log(Date.now());
     var email = req.body.email;
     console.log("11")
     var returnUID ={};
 
     user.findOne({where: {email: email}})
         .then((user) =>{
-
-            console.log("asd")
             if(user!=null){
                 returnUID['id'] = user.id;
                 console.log(returnUID)
@@ -71,6 +74,7 @@ router.post('/is_user', function (req, res) {
 });
 
 router.post('/emailcheck', function (req, res) {
+    console.log(Date.now());
     var email = req.body.email;
 
     user.findOne({where: {email: email}})
@@ -86,6 +90,7 @@ router.post('/emailcheck', function (req, res) {
 });
 
 router.post('/', function (req, res) {
+    console.log(Date.now());
     let salt = Math.round((new Date().valueOf()) * Math.random()) + "";
 
     let response = {
@@ -163,6 +168,8 @@ router.post('/', function (req, res) {
     res.redirect("/")
 
 });
+
+
 
 
 

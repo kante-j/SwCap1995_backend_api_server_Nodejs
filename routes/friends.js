@@ -1,105 +1,97 @@
 var express = require('express');
 var router = express.Router();
 
-const models= require('../models');
+const {user, friend} = require('../models');
 // const {user} = require('../models');
 
 
-// router.get('/', function (req, res) {
-//     res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
-// });
-
+router.get('/', function (req, res) {
+    console.log(Date.now());
+    res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
+});
 
 
 router.get('/:user_id', function (req, res) {
+    console.log(Date.now());
 
     console.log("Qweqwe");
-    // friend.findAll({where:{
-    //     user_id: req.params.user_id
-    //     }}).then((friend) =>{
-    //         console.log(friend[1])
-    // }).catch(err =>{
-    //     console.log(err);
-    // });
 
-    // models.friend.findAndCountAll({
-    //     where:{
-    //         user_id: req.params.user_id
-    //     },
-    //     include:[{
-    //         model: models.user,
-    //         as: "user",
-    //
-    //     }],
-    //
-    // }).then((users) =>{
-    //     console.log(JSON.stringify(users));
-    // });
-
-    models.user.findAndCountAll({
-        include:[{
-            model: models.friend,
+    user.findAndCountAll({
+        include: [{
+            model: friend,
             as: "friend",
-            attributes: ['user_id', 'friend_id'],
-            where:{
+            attributes: ['user_id', 'friend_id', 'isaccept'],
+            where: {
                 user_id: req.params.user_id,
             },
         }],
 
-    }).then((user) =>{
+    }).then((user) => {
         res.send(user);
-    }).catch(err =>{
+    }).catch(err => {
+        console.log(err);
         res.send(500);
     });
-
-    // models.user.findAll({
-    //     include:[
-    //         {
-    //             model: models.friend,
-    //             as: "friend",
-    //             where:{ user_id: req.params.user_id}
-    //         },
-    //     ],
-    //     // where:{
-    //     //     'friend':{
-    //     //         user_id: req.params.user_id
-    //     //     }
-    //     // }
-    // }).then((user) =>{
-    //     console.log(user);
-    // });
-
-    // res.redirect('query{\n' +
-    //     '  friendGet(where : {\n' +
-    //     '  iuaccept: \"accept\" \n' +
-    //     '    user_id:' + req.params.user_id + '\n' +
-    //     '  }) {\n' +
-    //     '    id,\n' +
-    //     '    user_id,\n' +
-    //     '    friend_id\n' +
-    //     '  }\n' +
-    //     '}');
 });
 
 
-// router.get('/:user_id', function (req, res) {
-//
-//
-//
-//     res.redirect('query{\n' +
-//         '  friendGet(where : {\n' +
-//         '  iuaccept: \"accept\" \n' +
-//         '    user_id:' + req.params.user_id + '\n' +
-//         '  }) {\n' +
-//         '    id,\n' +
-//         '    user_id,\n' +
-//         '    friend_id\n' +
-//         '  }\n' +
-//         '}');
-// });
+router.put('/add', function (req, res) {
+    console.log(Date.now());
+    let response = {
+        user_id: req.body.user_id,
+        target_nickname: req.body.nickname
+    };
+
+    user.findOne({
+        where: {
+            nickname: response.target_nickname
+        }
+    }).then((target_user) => {
+        friend.create({
+            user_id: response.user_id,
+            friend_id: target_user.id,
+            isaccept: 'waiting',
+            created_at: Date.now(),
+        })
+        res.send(200)
+    }).catch((err) => {
+        console.log(err);
+        res.send(500)
+    });
+});
 
 
-
+router.patch('/response', function (req, res) {
+    console.log(Date.now());
+    let response = {
+        user_id: req.body.user_id,
+        target_nickname: req.body.nickname,
+        is_accept: req.body.is_accept
+    };
+    user.findOne({
+        where: {
+            nickname: response.target_nickname
+        }
+    }).then((target_user) => {
+        friend.findOne({
+            where: {
+                user_id: response.user_id,
+                friend_id: target_user.id
+            }
+        }).then((friend)=>{
+            friend.update({
+                isaccept: response.is_accept
+            });
+            res.send(200);
+        }).catch((err)=>{
+            console.log(err);
+            res.send(500);
+        })
+    }).catch((err) => {
+        console.log(err);
+        res.send(500);
+    });
+});
 
 
 module.exports = router;
