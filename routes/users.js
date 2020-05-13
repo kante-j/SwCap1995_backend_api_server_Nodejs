@@ -28,14 +28,14 @@ function decrypt(text) {
 }
 
 router.get('/', function (req, res, next) {
-    console.log(Date.now());
+    console.log(new Date());
     res.redirect('graphql?query={userGet{id,email}}');
 });
 
 //TODO : 이메일 비밀번호 찾기
 
 router.post('/is_nickname', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     var nickname = req.body.nickname;
 
     user.findOne({where: {nickname: nickname}})
@@ -53,7 +53,7 @@ router.post('/is_nickname', function (req, res) {
 
 // 유저이메일로 유저 테이블에 유저가 있는 지 없는지 확인
 router.post('/is_user', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     var email = req.body.email;
     console.log("11")
     var returnUID ={};
@@ -74,7 +74,7 @@ router.post('/is_user', function (req, res) {
 });
 
 router.post('/emailcheck', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     var email = req.body.email;
 
     user.findOne({where: {email: email}})
@@ -90,7 +90,7 @@ router.post('/emailcheck', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     let salt = Math.round((new Date().valueOf()) * Math.random()) + "";
 
     let response = {

@@ -6,15 +6,14 @@ const {user, friend} = require('../models');
 
 
 router.get('/', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
 });
 
 
 router.get('/:user_id', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
 
-    console.log("Qweqwe");
 
     user.findAndCountAll({
         include: [{
@@ -36,7 +35,7 @@ router.get('/:user_id', function (req, res) {
 
 
 router.put('/add', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     let response = {
         user_id: req.body.user_id,
         target_nickname: req.body.nickname
@@ -62,7 +61,7 @@ router.put('/add', function (req, res) {
 
 
 router.patch('/response', function (req, res) {
-    console.log(Date.now());
+    console.log(new Date());
     let response = {
         user_id: req.body.user_id,
         target_nickname: req.body.nickname,
