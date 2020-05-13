@@ -50,6 +50,32 @@ router.post('/is_nickname', function (req, res) {
         })
 });
 
+router.get('/is_face_detection', function (req, res) {
+    console.log(new Date());
+    var user_id = req.body.user_id;
+
+    user.findOne({where: {id: user_id}})
+        .then((user) =>{
+            res.send(user.is_face_detection);
+        }).catch(err =>{
+            console.log(err);
+            res.send(500);
+    });
+});
+
+
+router.post('/face_detection', function (req, res) {
+    console.log(new Date());
+    var user_id = req.body.user_id;
+
+    user.findOne({where: {id: user_id}})
+        .then((user) =>{
+            res.send(user.is_face_detection);
+        }).catch(err =>{
+        console.log(err);
+        res.send(500);
+    });
+});
 
 // 유저이메일로 유저 테이블에 유저가 있는 지 없는지 확인
 router.post('/is_user', function (req, res) {
@@ -168,7 +194,6 @@ router.post('/', function (req, res) {
     res.redirect("/")
 
 });
-
 
 
 
