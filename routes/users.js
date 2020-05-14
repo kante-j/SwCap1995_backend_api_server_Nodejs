@@ -52,6 +52,7 @@ router.post('/is_nickname', function (req, res) {
 
 router.get('/is_face_detection', function (req, res) {
     console.log(new Date());
+    console.log(req);
     var user_id = req.body.user_id;
 
     user.findOne({where: {id: user_id}})
