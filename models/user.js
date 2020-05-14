@@ -57,6 +57,7 @@ module.exports = (sequelize, DataTypes) => {
             as: 'friend',
             foreignKey: 'friend_id'
         });
+
     };
     return user;
 };

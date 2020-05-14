@@ -14,12 +14,11 @@ router.get('/', function (req, res) {
 router.get('/:user_id', function (req, res) {
     console.log(new Date());
 
-
     user.findAndCountAll({
         include: [{
             model: friend,
             as: "friend",
-            attributes: ['user_id', 'friend_id', 'isaccept'],
+            attributes: [],
             where: {
                 user_id: req.params.user_id,
                 isaccept: 'accept'
@@ -38,23 +37,41 @@ router.get('/:user_id', function (req, res) {
 router.get('/waiting/:user_id', function (req, res) {
     console.log(new Date());
 
-    user.findAndCountAll({
-        include: [{
-            model: friend,
-            as: "friend",
-            attributes: ['user_id', 'friend_id', 'isaccept'],
-            where: {
-                friend_id: req.params.user_id,
-                isaccept: 'waiting'
-            },
+    friend.findAndCountAll({
+        include:[{
+            model: user,
+            as: 'user',
         }],
-
+        where:{
+            friend_id: req.params.user_id,
+            isaccept: 'waiting'
+        },
     }).then((user) => {
         res.send(user);
     }).catch(err => {
         console.log(err);
         res.send(500);
     });
+
+    // user.findAndCountAll({
+    //     include: [{
+    //         model: friend,
+    //         as: "friend",
+    //         attributes: ['user_id', 'friend_id', 'isaccept'],
+    //         where: {
+    //             // friend_id: req.params.user_id,
+    //             isaccept: 'waiting'
+    //         },
+    //     }],
+    //     where:{
+    //         id: 'friend.friend_id'
+    //     }
+    // }).then((user) => {
+    //     res.send(user);
+    // }).catch(err => {
+    //     console.log(err);
+    //     res.send(500);
+    // });
 });
 
 
@@ -110,12 +127,20 @@ router.patch('/response', function (req, res) {
     }).then((target_user) => {
         friend.findOne({
             where: {
-                user_id: response.user_id,
-                friend_id: target_user.id
+                friend_id: response.user_id,
+                user_id: target_user.id
             }
-        }).then((friend)=>{
-            friend.update({
+            //친구 목록을 수락하면
+        }).then((friend_one)=>{
+            console.log(friend_one)
+            friend_one.update({
                 isaccept: response.is_accept
+            });
+            friend.create({
+                friend_id: target_user.id,
+                user_id: response.user_id,
+                isaccept: 'accept',
+                created_at: Date.now(),
             });
             res.send(200);
         }).catch((err)=>{
