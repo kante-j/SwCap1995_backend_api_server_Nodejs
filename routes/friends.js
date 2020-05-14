@@ -37,21 +37,51 @@ router.get('/:user_id', function (req, res) {
 router.get('/waiting/:user_id', function (req, res) {
     console.log(new Date());
 
-    friend.findAndCountAll({
-        include:[{
-            model: user,
-            as: 'user',
-        }],
+    var list =[];
+
+    friend.findAll({
         where:{
             friend_id: req.params.user_id,
             isaccept: 'waiting'
-        },
-    }).then((user) => {
-        res.send(user);
-    }).catch(err => {
-        console.log(err);
-        res.send(500);
+        }
+    }).then(friends =>{
+        friends.map((friend) =>{
+            // console.log(friend.dataValues.user_id);
+            list.push(friend.dataValues.user_id)
+        });
+
+        if(list>0) {
+            user.findAndCountAll({
+                where: {
+                    id: list,
+                }
+            }).then((user) => {
+                res.send(user);
+            })
+        }
+
+    }).catch(err=>{
+        res.send(err);
     });
+
+    // friend.findAndCountAll({
+    //     include:[{
+    //         model: user,
+    //         as: 'user',
+    //         where:{
+    //             id: req.params.user_id
+    //         }
+    //     }],
+    //     where:{
+    //         friend_id: req.params.user_id,
+    //         isaccept: 'waiting'
+    //     },
+    // }).then((user) => {
+    //     res.send(user);
+    // }).catch(err => {
+    //     console.log(err);
+    //     res.send(500);
+    // });
 
     // user.findAndCountAll({
     //     include: [{
@@ -59,13 +89,10 @@ router.get('/waiting/:user_id', function (req, res) {
     //         as: "friend",
     //         attributes: ['user_id', 'friend_id', 'isaccept'],
     //         where: {
-    //             // friend_id: req.params.user_id,
+    //             friend_id: req.params.user_id,
     //             isaccept: 'waiting'
     //         },
     //     }],
-    //     where:{
-    //         id: 'friend.friend_id'
-    //     }
     // }).then((user) => {
     //     res.send(user);
     // }).catch(err => {
