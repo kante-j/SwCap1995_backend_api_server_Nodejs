@@ -72,6 +72,7 @@ const upload = multer({
 // });
 
 router.post('/upload2', upload.single('photo'), (req, res, next) => {
+    console.log(req);
     res.json(req.file)
 });
 
