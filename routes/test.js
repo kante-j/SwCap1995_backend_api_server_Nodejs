@@ -11,48 +11,76 @@ const region = 'kr-standard';
 const access_key = secretKey.ACCESS_KEY;
 const secret_key = secretKey.SECRET_KEY;
 
-const S3 = new AWS.S3({
+const s3 = new AWS.S3({
     endpoint: endpoint,
     region: region,
     credentials: {
         accessKeyId : access_key,
         secretAccessKey: secret_key
-    }
+    },
 });
 
-const bucket_name = 'swcap1995';
-const MAX_KEYS = 300;
-
-var params = {
-    Bucket: bucket_name,
-    MaxKeys: MAX_KEYS
-};
-
-let upload = multer({
+// Initialize multers3 with our s3 config and other options
+const upload = multer({
     storage: multerS3({
-        s3: S3,
-        bucket: bucket_name,
-        acl: 'public-read-write',
-        metadata(req,file,cb){
-          cb(null, {fieldName: file.fieldname});
+        s3: s3,
+        bucket: 'swcap1995',
+        acl: 'public-read',
+        metadata(req, file, cb) {
+            console.log("metadata"+ file)
+            cb(null, {fieldName: file.fieldname});
         },
-        key: function (req, file, cb) {
-            let extension = path.extname(file.originalname);
-            cb(null, Date.now().toString() + extension)
-        },
+        key(req, file, cb) {
+            console.log("key"+file)
+            cb(null, Date.now().toString() + '.png');
+        }
     })
 });
 
-router.post('/upload2', upload.single('photo'), (req, res, next) =>{
+
+
+
+
+// const S3 = new AWS.S3({
+//     endpoint: endpoint,
+//     region: region,
+//     accessKeyId: access_key,
+//     secretAccessKey: secret_key
+// });
+//
+// const bucket_name = 'swcap1995';
+// const MAX_KEYS = 300;
+//
+// var params = {
+//     Bucket: bucket_name,
+//     MaxKeys: MAX_KEYS
+// };
+//
+// let upload = multer({
+//     storage: multerS3({
+//         s3: S3,
+//         bucket: bucket_name,
+//         acl: 'public-read-write',
+//         metadata(req, file, cb) {
+//             cb(null, {fieldName: file.fieldname});
+//         },
+//         key: function (req, file, cb) {
+//             let extension = path.extname(file.originalname);
+//             cb(null, Date.now().toString() + extension)
+//         },
+//     })
+// });
+
+router.post('/upload2', upload.single('photo'), (req, res, next) => {
     res.json(req.file)
 });
 
-router.post('/upload', upload.single("imgFile"), function(req, res, next){
+router.post('/upload', upload.single("imgFile"), function (req, res, next) {
     let imgFile = req.file;
     res.json(imgFile);
 })
 
-router.get('/', function (req,res) {
+router.get('/', function (req, res) {
 
     (async () => {
 
@@ -85,7 +113,7 @@ router.get('/', function (req,res) {
         console.log('Top Level Folders And Files In The Bucket');
         console.log('==========================');
 
-        while(true) {
+        while (true) {
 
             let response = await S3.listObjectsV2(params).promise();
 
@@ -94,17 +122,17 @@ router.get('/', function (req,res) {
             console.log(`NextMarker = ${response.NextMarker ? response.NextMarker : null}`);
 
             console.log(`  Folder Lists`);
-            for(let folder of response.CommonPrefixes) {
+            for (let folder of response.CommonPrefixes) {
                 console.log(`    Name = ${folder.Prefix}`)
             }
 
             console.log(`  File Lists`);
-            for(let content of response.Contents) {
+            for (let content of response.Contents) {
                 console.log(`    Name = ${content.Key}, Size = ${content.Size}, Owner = ${content.Owner.ID}`)
             }
 
 
-            if(response.IsTruncated) {
+            if (response.IsTruncated) {
                 params.Marker = response.NextMarker;
             } else {
                 break;
@@ -117,7 +145,7 @@ router.get('/', function (req,res) {
 
 
 const local_file_path = '/tmp/test.txt';
-router.post('/',function (req, res) {
+router.post('/', function (req, res) {
 
     console.log(req);
     (async () => {
@@ -136,10 +164,11 @@ router.post('/',function (req, res) {
             Bucket: bucket_name,
             Key: object_name,
             ACL: 'public-read',
-            Body: req.body.uri
+            Body: req.body
         }).promise();
 
     })();
+
     res.send(200);
 
 })
