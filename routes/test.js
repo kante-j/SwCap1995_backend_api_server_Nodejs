@@ -32,13 +32,20 @@ let upload = multer({
     storage: multerS3({
         s3: S3,
         bucket: bucket_name,
+        acl: 'public-read-write',
+        metadata(req,file,cb){
+          cb(null, {fieldName: file.fieldname});
+        },
         key: function (req, file, cb) {
             let extension = path.extname(file.originalname);
             cb(null, Date.now().toString() + extension)
         },
-        acl: 'public-read-write',
     })
-})
+});
+
+router.post('/upload2', upload.single('photo'), (req, res, next) =>{
+    res.json(req.file)
+});
 
 router.post('/upload', upload.single("imgFile"), function(req, res, next){
     let imgFile = req.file;
