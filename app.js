@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var categoriesRouter = require('./routes/categories');
 var friendsRouter = require('./routes/friends');
+var plansRouter = require('./routes/plans');
 var testRouter = require('./routes/test');
 var {GraphQLSchema} = require('graphql');
 var bodyParser = require('body-parser');
@@ -38,6 +39,7 @@ app.use('/users', usersRouter);
 app.use('/categories', categoriesRouter);
 app.use('/friends', friendsRouter);
 app.use('/test', testRouter);
+app.use('/plans', plansRouter);
 
 app.use('/graphql', graphqlHTTP({
     schema: new GraphQLSchema(generateSchema(models)),
