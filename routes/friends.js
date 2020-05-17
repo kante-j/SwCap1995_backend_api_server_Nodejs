@@ -50,13 +50,17 @@ router.get('/waiting/:user_id', function (req, res) {
             list.push(friend.dataValues.user_id)
         });
 
-        if(list>0) {
+        console.log(list)
+
+        if(list.length>0) {
             user.findAndCountAll({
                 where: {
                     id: list,
                 }
             }).then((user) => {
                 res.send(user);
+            }).catch(err =>{
+                console.log(err)
             })
         }
 
