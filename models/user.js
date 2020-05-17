@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
             foreignKey: 'friend_id'
         });
 
+        user.hasMany(models.plan, {
+            foreignKey: 'user_id'
+        })
+
     };
     return user;
 };

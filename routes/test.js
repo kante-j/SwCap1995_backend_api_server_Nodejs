@@ -129,7 +129,7 @@ router.post('/',function (req, res) {
             Bucket: bucket_name,
             Key: object_name,
             ACL: 'public-read',
-            Body: fs.createReadStream(local_file_path)
+            Body: fs.createReadStream(req.body.uri)
         }).promise();
 
     })();
