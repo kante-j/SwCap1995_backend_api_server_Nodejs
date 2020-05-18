@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const crypto = require('crypto');
-const {user, friend} = require('../models');
+const {user, friend, point} = require('../models');
 const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
@@ -192,6 +192,37 @@ router.post('/', function (req, res) {
 
     res.redirect("/")
 
+});
+
+
+
+// 포인트
+router.get('/me/points/:user_id',function (req,res) {
+    console.log(new Date());
+
+    var myPoint ={};
+    myPoint['plus']=0;
+    myPoint['minus']=0;
+    myPoint['total']=0;
+
+    point.findAll({
+        where:{
+            user_id: req.params.user_id
+        }
+    }).then(points =>{
+        points.map(point =>{
+            if(point.dataValues.amount>0 && point.dataValues.class=='challenge'){
+                myPoint['plus'] += point.dataValues.amount
+            }else if(point.dataValues.amount <0 && point.dataValues.class=='challenge'){
+                myPoint['minus'] += point.dataValues.amount
+            }
+        });
+        myPoint['total'] = myPoint['plus'] + myPoint['minus']
+
+        res.send(myPoint)
+    }).catch(err =>{
+        res.sendStatus(500);
+    })
 });
 
 

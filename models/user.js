@@ -60,7 +60,11 @@ module.exports = (sequelize, DataTypes) => {
 
         user.hasMany(models.plan, {
             foreignKey: 'user_id'
-        })
+        });
+
+        user.hasMany(models.point, {
+            foreignKey: 'user_id'
+        });
 
     };
     return user;
