@@ -16,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     like_num: {
       type: DataTypes.INTEGER
     },
+    image_url: {
+      type: DataTypes.STRING
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
