@@ -37,72 +37,42 @@ router.get('/:user_id', function (req, res) {
 router.get('/waiting/:user_id', function (req, res) {
     console.log(new Date());
 
-    var list =[];
+    var list = [];
 
     friend.findAll({
-        where:{
+        where: {
             friend_id: req.params.user_id,
             isaccept: 'waiting'
         }
-    }).then(friends =>{
-        friends.map((friend) =>{
-            // console.log(friend.dataValues.user_id);
-            list.push(friend.dataValues.user_id)
-        });
+    }).then(friends => {
+        if (friends.length > 0) {
+            friends.map((friend) => {
+                // console.log(friend.dataValues.user_id);
+                list.push(friend.dataValues.user_id)
+            });
 
-        console.log(list)
-
-        if(list.length>0) {
-            user.findAndCountAll({
-                where: {
-                    id: list,
-                }
-            }).then((user) => {
-                res.send(user);
-            }).catch(err =>{
-                console.log(err)
-            })
+            if (list.length > 0) {
+                user.findAndCountAll({
+                    where: {
+                        id: list,
+                    }
+                }).then((user) => {
+                    res.send(user);
+                }).catch(err => {
+                    console.log(err)
+                    res.sendStatus(500)
+                })
+            }else{
+                res.sendStatus(500)
+            }
         }
 
-    }).catch(err=>{
+
+    }).catch(err => {
         res.send(err);
     });
 
-    // friend.findAndCountAll({
-    //     include:[{
-    //         model: user,
-    //         as: 'user',
-    //         where:{
-    //             id: req.params.user_id
-    //         }
-    //     }],
-    //     where:{
-    //         friend_id: req.params.user_id,
-    //         isaccept: 'waiting'
-    //     },
-    // }).then((user) => {
-    //     res.send(user);
-    // }).catch(err => {
-    //     console.log(err);
-    //     res.send(500);
-    // });
-
-    // user.findAndCountAll({
-    //     include: [{
-    //         model: friend,
-    //         as: "friend",
-    //         attributes: ['user_id', 'friend_id', 'isaccept'],
-    //         where: {
-    //             friend_id: req.params.user_id,
-    //             isaccept: 'waiting'
-    //         },
-    //     }],
-    // }).then((user) => {
-    //     res.send(user);
-    // }).catch(err => {
-    //     console.log(err);
-    //     res.send(500);
-    // });
+    return
 });
 
 
@@ -120,13 +90,13 @@ router.put('/add', function (req, res) {
     }).then((target_user) => {
         //친구목록에 찾아서 없으면 friends 테이블에 추가
         friend.findOne({
-            where:{
+            where: {
                 user_id: response.user_id,
                 friend_id: target_user.id
             }
-        }).then((user) =>{
+        }).then((user) => {
             console.log("친구목록에 존재합니다!")
-        }).catch(err =>{
+        }).catch(err => {
             console.log("친구목록 생성 완료")
             friend.create({
                 user_id: response.user_id,
@@ -162,7 +132,7 @@ router.patch('/response', function (req, res) {
                 user_id: target_user.id
             }
             //친구 목록을 수락하면
-        }).then((friend_one)=>{
+        }).then((friend_one) => {
             console.log(friend_one)
             friend_one.update({
                 isaccept: response.is_accept
@@ -174,7 +144,7 @@ router.patch('/response', function (req, res) {
                 created_at: Date.now(),
             });
             res.send(200);
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err);
             res.send(500);
         })
