@@ -153,16 +153,32 @@ router.patch('/response', function (req, res) {
             }
             //친구 목록을 수락하면
         }).then((friend_one) => {
-            console.log(friend_one)
-            friend_one.update({
-                isaccept: response.is_accept
-            });
-            friend.create({
-                friend_id: target_user.id,
-                user_id: response.user_id,
-                isaccept: 'accept',
-                created_at: Date.now(),
-            });
+            if(response.is_accept == 'accept'){
+                friend_one.update({
+                    isaccept: response.is_accept
+                });
+                friend.create({
+                    friend_id: target_user.id,
+                    user_id: response.user_id,
+                    isaccept: 'accept',
+                    created_at: Date.now(),
+                });
+
+                user.findOne({where: {id: response.user_id}}).then((user) => {
+                    pushService.handlePushTokens(user.nickname + '님과 친구가 되었습니다!',
+                        target_user.deviceToken);
+                }).then(() => {
+                    res.send(200)
+                }).catch(err => {
+                    console.log(err);
+                    res.send(500)
+                })
+            }else{
+                friend_one.update({
+                    isaccept: response.is_accept
+                });
+            }
+
             res.send(200);
         }).catch((err) => {
             console.log(err);

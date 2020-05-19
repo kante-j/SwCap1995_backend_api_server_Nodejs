@@ -69,8 +69,4 @@ var logger = new winston.createLogger({
     //     })
     // ]
 });
-
-
-logger.info('this is my message');
-
 module.exports = logger;
