@@ -75,6 +75,13 @@ router.get('/waiting/:user_id', function (req, res) {
     return
 });
 
+var isEmpty = function (value) {
+    if (value == "" || value == null || value == undefined || (value != null && typeof value == "object" && !Object.keys(value).length)) {
+        return true
+    } else {
+        return false
+    }
+};
 
 router.put('/add', function (req, res) {
     console.log(new Date());
@@ -95,6 +102,10 @@ router.put('/add', function (req, res) {
                 friend_id: target_user.id
             }
         }).then((user) => {
+            console.log(user)
+            if (isEmpty(user)) {
+                throw new Error();
+            }
             console.log("친구목록에 존재합니다!")
         }).catch(err => {
             console.log("친구목록 생성 완료")
