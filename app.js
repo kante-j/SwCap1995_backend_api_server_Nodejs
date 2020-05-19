@@ -3,7 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const wintonLogger = require('./logger');
+const expressWinston = require('express-winston');
 const graphqlHTTP = require('express-graphql');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -48,6 +49,14 @@ app.use('/detailedCategories',detailedCategoriesRouter);
 app.use('/graphql', graphqlHTTP({
     schema: new GraphQLSchema(generateSchema(models)),
     graphiql: true,
+}));
+
+app.use(expressWinston.logger({ // use logger to log every requests
+    transports: [wintonLogger],
+    meta: false, // optional: control whether you want to log the meta data about the request (default to true)
+    msg: `{{req.ip}} - {{res.statusCode}} - {{req.method}} - {{res.responseTime}}ms - {{req.url}} - {{req.headers['user-agent']}}`, // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+    expressFormat: false, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+    colorize: true
 }));
 
 // catch 404 and forward to error handler
