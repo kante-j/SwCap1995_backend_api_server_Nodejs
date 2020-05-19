@@ -26,7 +26,18 @@ const handlePushTokens = (message) => {
             data: { message }
         })
     }
-    // Defined in following step
+
+    let chunks = expo.chunkPushNotifications(notifications);
+    (async () => {
+        for (let chunk of chunks) {
+            try {
+                let receipts = await expo.sendPushNotificationsAsync(chunk);
+                console.log(receipts);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    })();
 };
 
 
