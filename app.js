@@ -78,5 +78,5 @@ app.use(function (err, req, res, next) {
 // app.listen(3000, function() {
 //     console.log('RUNNING ON 8080. Graphiql http://localhost:8080/graphql')
 // })
-
+wintonLogger.info('app start');
 module.exports = app;
