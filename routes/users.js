@@ -5,6 +5,7 @@ const {user, friend, point} = require('../models');
 const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
+const push = require('../modules/push');
 
 /* GET users listing. */
 
@@ -127,6 +128,7 @@ router.post('/', function (req, res) {
         nickname: req.body.nickname,
         created_at: Date.now(),
         is_face_detection: false,
+        deviceToken: req.body.deviceToken,
         weight: 1,
         is_email_login: req.body.is_email_login,
 
@@ -147,6 +149,7 @@ router.post('/', function (req, res) {
                     // password: response.password,
                     sex: response.sex,
                     age: response.age,
+                    deviceToken: response.deviceToken,
                     created_at: response.created_at,
                     nickname : response.nickname,
                     is_face_detection: response.is_face_detection,
@@ -163,6 +166,7 @@ router.post('/', function (req, res) {
                 sex: response.sex,
                 age: response.age,
                 nickname : response.nickname,
+                deviceToken: response.deviceToken,
                 created_at: response.created_at,
                 is_face_detection: response.is_face_detection,
                 weight: response.weight,
@@ -181,6 +185,7 @@ router.post('/', function (req, res) {
             // password: response.password,
             sex: response.sex,
             age: response.age,
+            deviceToken: response.deviceToken,
             created_at: response.created_at,
             nickname : response.nickname,
             is_face_detection: response.is_face_detection,

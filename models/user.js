@@ -39,6 +39,9 @@ module.exports = (sequelize, DataTypes) => {
         nickname:{
             type: DataTypes.STRING(30),
         },
+        deviceToken:{
+            type: DataTypes.STRING,
+        },
         weight: {
             allowNull: true,
             type: DataTypes.INTEGER,

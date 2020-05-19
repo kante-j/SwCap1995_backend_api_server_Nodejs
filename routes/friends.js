@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+const pushService = require('../modules/push');
 const {user, friend} = require('../models');
 // const {user} = require('../models');
 
@@ -62,7 +62,7 @@ router.get('/waiting/:user_id', function (req, res) {
                     console.log(err)
                     res.sendStatus(500)
                 })
-            }else{
+            } else {
                 res.sendStatus(500)
             }
         }
@@ -104,7 +104,16 @@ router.put('/add', function (req, res) {
                 isaccept: 'waiting',
                 created_at: Date.now(),
             });
-            res.send(200);
+            user.findOne({where: {id: response.user_id}}).then((user) => {
+                pushService.handlePushTokens(user.nickname + '님이 친구요청을 보냈습니다',
+                    target_user.deviceToken);
+            }).then(() => {
+                res.send(200)
+            }).catch(err => {
+                console.log(err);
+                res.send(500)
+            })
+
         });
 
     }).catch((err) => {
