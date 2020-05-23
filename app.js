@@ -17,7 +17,11 @@ var detailedCategoriesRouter = require('./routes/detailedCategories');
 var testRouter = require('./routes/test');
 var {GraphQLSchema} = require('graphql');
 var bodyParser = require('body-parser');
-
+var swaggerDoc = require('./routes/swaggerDoc')
+const swaggerOption = require('./routes/swagger');
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerSpec = swaggerJSDoc(swaggerOption);
+const swaggerUi = require('swagger-ui-express');
 var options = {
     exclude: ["users"]
 };
@@ -53,6 +57,7 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,
 }));
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(expressWinston.logger({ // use logger to log every requests
     transports: [logger],
     meta: false, // optional: control whether you want to log the meta data about the request (default to true)
