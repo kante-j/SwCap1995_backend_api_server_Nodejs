@@ -28,7 +28,48 @@ function decrypt(text) {
     dec += decipher.final('base64')
     return dec
 }
+/**
+ * @swagger
+ * definitions:
+ *  user:
+ *   type: object
+ *   properties:
+ *     id:
+ *       type: integer
+ *       description: 유저 id
+ *     nickname:
+ *       type: string
+ *       description: 유저 nickname
+ *     email:
+ *       type: string
+ *       description: 유저 email
+ *     is_face_detection:
+ *       type: boolean
+ *       description: 유저 is_face_detection
+ *     is_email_login:
+ *       type: boolean
+ *       description: 유저 is_email_login
+ */
 
+
+/**
+ * @swagger
+ * paths:
+ *  /users:
+ *    get:
+ *      tags:
+ *      - user
+ *      summary: "get users"
+ *      description: "Returns a users"
+ *      produces:
+ *      - applicaion/json
+ *
+ *      responses:
+ *       200:
+ *        description: users of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/', function (req, res, next) {
     console.log(new Date());
     res.redirect('graphql?query={userGet{id,email}}');
@@ -36,6 +77,33 @@ router.get('/', function (req, res, next) {
 
 //TODO : 이메일 비밀번호 찾기
 
+/**
+ * @swagger
+ * paths:
+ *  /users/is_nickname:
+ *    post:
+ *      tags:
+ *      - user
+ *      summary: "get users"
+ *      description: "Returns a users"
+ *      consumes:
+ *      - "application/json"
+ *      - "application/xml"
+ *      - x-www-form-urlencoded
+ *      parameters:
+ *      - name: "body"
+ *        in: "body"
+ *        required: true
+ *        schema:
+ *          $ref: "#/definitions/user"
+ *      produces:
+ *      - application/json
+ *      responses:
+ *       200:
+ *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ */
 router.post('/is_nickname', function (req, res) {
     console.log(new Date());
     var nickname = req.body.nickname;
@@ -52,6 +120,9 @@ router.post('/is_nickname', function (req, res) {
         })
 });
 
+
+
+
 router.get('/is_face_detection/:user_id', function (req, res) {
     console.log(new Date());
 
@@ -64,7 +135,35 @@ router.get('/is_face_detection/:user_id', function (req, res) {
     });
 });
 
-
+/**
+ * @swagger
+ * paths:
+ *  /users/face_detection:
+ *    post:
+ *      tags:
+ *      - user
+ *      summary: "해당 유저의 is_face_detection 컬럼 1로 변경"
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: body
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.post('/face_detection', function (req, res) {
     console.log(new Date());
     var user_id = req.body.user_id;

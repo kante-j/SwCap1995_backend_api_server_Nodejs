@@ -8,71 +8,75 @@ const {category} = require('../models');
  * definitions:
  *  category:
  *   type: object
- *   required:
  *   properties:
+ *     id:
+ *       type: integer
+ *       description: 카테고리 id
  *     name:
  *       type: string
- *       description: 게시글 제목
- *     boardContent:
- *       type: string
  *       description: 게시글 내용
- *     boardState:
- *       type: boolean
+ *     description:
+ *       type: string
  *       description: 게시글 숨김상태여부
- *     boardType:
+ *     image_url:
  *       type: string
  *       description: 게시글 타입
  */
 
+
 /**
  * @swagger
- *  /:
+ * paths:
+ *  /categories:
  *    get:
  *      tags:
  *      - category
  *      description: 모든 카테고리를 가져온다.
  *      produces:
- *      - applicaion/json
- *      parameters:
+ *      - "application/xml"
+ *      - "applicaion/json"
  *      responses:
  *       200:
  *        description: category of column list
  *        schema:
  *          type: json
- *          items:
- *           $ref: '#/definitions/boardItem'
  */
 router.get('/', function (req, res) {
     console.log(new Date());
     res.redirect('graphql?query={categoryGet{name, description}}');
 });
 
-
-/**
- * @swagger
- *  /image:
- *    get:
- *      tags:
- *      - category
- *      description: 모든 게시글을 가져온다.
- *      produces:
- *      - applicaion/json
- *      parameters:
- *      responses:
- *       200:
- *        description: category of column list
- *        schema:
- *          type: array
- *          items:
- *           $ref: '#/definitions/boardItem'
- */
 router.get('/image', function (req, res) {
     console.log(new Date());
     res.send('https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg');
 });
 
-router.get('/search', function (req, res) {
+
+/**
+ * @swagger
+ * paths:
+ *  /categories/search/{query}:
+ *    get:
+ *      tags:
+ *      - category
+ *      summary: "search category"
+ *      description: "Returns a query"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - name: "query"
+ *        in: "path"
+ *        required: true
+ *        type: "string"
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.get('/search/:query', function (req, res) {
     console.log(new Date());
-    res.send(req.query.query);
+    res.send(req.params.query);
 });
 module.exports = router;

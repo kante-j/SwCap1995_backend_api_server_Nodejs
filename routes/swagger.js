@@ -4,7 +4,7 @@ module.exports = {
     swaggerDefinition: {
         // 정보
         info: {
-            title: 'node js test app',
+            title: 'swcap1995 Plan A project',
             version: '1.0.0',
             description: 'Make For node js test.'
         },
