@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var request = require('request');
 const crypto = require('crypto');
 const {user, friend, point} = require('../models');
 const secretKey = require('../secretKey');
@@ -40,11 +41,11 @@ router.post('/is_nickname', function (req, res) {
     var nickname = req.body.nickname;
 
     user.findOne({where: {nickname: nickname}})
-        .then((user) =>{
-            if(user!=null){
+        .then((user) => {
+            if (user != null) {
                 res.send(500);
                 return;
-            }else{
+            } else {
                 res.send(200);
                 return;
             }
@@ -55,11 +56,11 @@ router.get('/is_face_detection/:user_id', function (req, res) {
     console.log(new Date());
 
     user.findOne({where: {id: req.params.user_id}})
-        .then((user) =>{
+        .then((user) => {
             res.send(user.is_face_detection);
-        }).catch(err =>{
-            console.log(err);
-            res.send(500);
+        }).catch(err => {
+        console.log(err);
+        res.send(500);
     });
 });
 
@@ -69,9 +70,9 @@ router.post('/face_detection', function (req, res) {
     var user_id = req.body.user_id;
 
     user.findOne({where: {id: user_id}})
-        .then((user) =>{
+        .then((user) => {
             res.send(user.is_face_detection);
-        }).catch(err =>{
+        }).catch(err => {
         console.log(err);
         res.send(500);
     });
@@ -82,17 +83,17 @@ router.post('/is_user', function (req, res) {
     console.log(new Date());
     var email = req.body.email;
     console.log("11")
-    var returnUID ={};
+    var returnUID = {};
 
     user.findOne({where: {email: email}})
-        .then((user) =>{
-            if(user!=null){
+        .then((user) => {
+            if (user != null) {
                 returnUID['id'] = user.id;
                 console.log(returnUID)
                 res.send(returnUID);
                 // res.send(500);
                 return;
-            }else{
+            } else {
                 res.send(200);
                 return;
             }
@@ -104,11 +105,11 @@ router.post('/emailcheck', function (req, res) {
     var email = req.body.email;
 
     user.findOne({where: {email: email}})
-        .then((user) =>{
-            if(user.is_email_login == 1){
+        .then((user) => {
+            if (user.is_email_login == 1) {
                 res.send(200);
                 return;
-            }else{
+            } else {
                 res.send(500);
                 return;
             }
@@ -141,9 +142,9 @@ router.post('/', function (req, res) {
                 console.log("유저가 이미 있습니다.")
                 is_user = true;
             }
-        }).then(()=>{
-        console.log("유저 생성 완료 : "+response.email);
-            if (is_user == false){
+        }).then(() => {
+            console.log("유저 생성 완료 : " + response.email);
+            if (is_user == false) {
                 user.create({
                     email: response.email,
                     // password: response.password,
@@ -151,7 +152,7 @@ router.post('/', function (req, res) {
                     age: response.age,
                     deviceToken: response.deviceToken,
                     created_at: response.created_at,
-                    nickname : response.nickname,
+                    nickname: response.nickname,
                     is_face_detection: response.is_face_detection,
                     weight: response.weight,
                     is_email_login: response.is_email_login,
@@ -165,7 +166,7 @@ router.post('/', function (req, res) {
                 // password: response.password,
                 sex: response.sex,
                 age: response.age,
-                nickname : response.nickname,
+                nickname: response.nickname,
                 deviceToken: response.deviceToken,
                 created_at: response.created_at,
                 is_face_detection: response.is_face_detection,
@@ -187,7 +188,7 @@ router.post('/', function (req, res) {
             age: response.age,
             deviceToken: response.deviceToken,
             created_at: response.created_at,
-            nickname : response.nickname,
+            nickname: response.nickname,
             is_face_detection: response.is_face_detection,
             weight: response.weight,
             is_email_login: response.is_email_login,
@@ -199,39 +200,116 @@ router.post('/', function (req, res) {
 
 });
 
+//myPage
 
-
-// 포인트
-router.get('/me/points/:user_id',function (req,res) {
+router.get('/me/:user_id', function (req, res) {
     console.log(new Date());
+    var response = {};
+    var myPoint = {};
 
-    var myPoint ={};
-    myPoint['plus']=0;
-    myPoint['minus']=0;
-    myPoint['total']=0;
-
-    point.findAll({
-        where:{
-            user_id: req.params.user_id
+    // 유저 정보 가져오기
+    user.findOne({
+        where: {
+            id: req.params.user_id
         }
-    }).then(points =>{
-        points.map(point =>{
-            if(point.dataValues.amount>0 && point.dataValues.class=='challenge'){
-                myPoint['plus'] += point.dataValues.amount
-            }else if(point.dataValues.amount <0 && point.dataValues.class=='challenge'){
-                myPoint['minus'] += point.dataValues.amount
-            }
-        });
-        myPoint['total'] = myPoint['plus'] + myPoint['minus']
+    }).then((me) => {
+        response['user_id'] = me.id;
+        response['nickname'] = me.nickname;
+        response['email'] = me.email;
 
-        res.send(myPoint)
-    }).catch(err =>{
-        res.sendStatus(500);
+        //친구 몇명인지
+        friend.findAndCountAll({
+            where: {
+                friend_id: req.params.user_id
+            }
+        }).then(friendlist => {
+            response['friend_count'] = friendlist.count;
+
+
+            point.findAll({
+                where: {
+                    user_id: req.params.user_id
+                }
+            }).then(points => {
+                myPoint['challenge_plus'] = 0;
+                myPoint['challenge_minus'] = 0;
+                myPoint['challenge_total'] = 0;
+                myPoint['general_plus'] = 0;
+                myPoint['general_minus'] = 0;
+                myPoint['general_total'] = 0;
+
+                points.map(point => {
+                    if (point.dataValues.amount > 0 && point.dataValues.class == 'challenge') {
+                        myPoint['challenge_plus'] += point.dataValues.amount
+                    } else if (point.dataValues.amount < 0 && point.dataValues.class == 'challenge') {
+                        myPoint['challenge_minus'] += point.dataValues.amount
+                    }
+
+                    if (point.dataValues.amount > 0 && point.dataValues.class == 'general') {
+                        myPoint['general_plus'] += point.dataValues.amount
+                    } else if (point.dataValues.amount < 0 && point.dataValues.class == 'general') {
+                        myPoint['general_minus'] += point.dataValues.amount
+                    }
+                });
+                myPoint['challenge_total'] = myPoint['challenge_plus'] + myPoint['challenge_minus']
+                myPoint['general_total'] = myPoint['general_plus'] + myPoint['general_minus']
+
+                response['point'] = myPoint;
+
+                res.send(response)
+            }).catch(err => {
+                res.sendStatus(500);
+            })
+
+
+        })
+
+
+        // res.send(response)
     })
+
 });
 
 
+// 포인트
+router.get('/me/points/:user_id', function (req, res) {
+    console.log(new Date());
 
+    var myPoint = {};
+    myPoint['challenge_plus'] = 0;
+    myPoint['challenge_minus'] = 0;
+    myPoint['challenge_total'] = 0;
+    myPoint['general_plus'] = 0;
+    myPoint['general_minus'] = 0;
+    myPoint['general_total'] = 0;
+
+    point.findAll({
+        where: {
+            user_id: req.params.user_id
+        }
+    }).then(points => {
+        points.map(point => {
+            if (point.dataValues.amount > 0 && point.dataValues.class == 'challenge') {
+                myPoint['challenge_plus'] += point.dataValues.amount
+            } else if (point.dataValues.amount < 0 && point.dataValues.class == 'challenge') {
+                myPoint['challenge_minus'] += point.dataValues.amount
+            }
+
+            if (point.dataValues.amount > 0 && point.dataValues.class == 'general') {
+                myPoint['general_plus'] += point.dataValues.amount
+            } else if (point.dataValues.amount < 0 && point.dataValues.class == 'general') {
+                myPoint['general_minus'] += point.dataValues.amount
+            }
+        });
+        myPoint['challenge_total'] = myPoint['challenge_plus'] + myPoint['challenge_minus']
+        myPoint['general_total'] = myPoint['general_plus'] + myPoint['general_minus']
+
+        response['point'] = myPoint;
+        res.send(myPoint)
+    }).catch(err => {
+        res.sendStatus(500);
+    })
+});
 
 
 module.exports = router;
