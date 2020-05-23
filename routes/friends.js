@@ -113,7 +113,7 @@ router.put('/add', function (req, res) {
                 user_id: response.user_id,
                 friend_id: target_user.id,
                 isaccept: 'waiting',
-                created_at: Date.now(),
+                createdAt: Date.now(),
             });
             user.findOne({where: {id: response.user_id}}).then((user) => {
                 pushService.handlePushTokens(user.nickname + '님이 친구요청을 보냈습니다',
@@ -161,7 +161,7 @@ router.patch('/response', function (req, res) {
                     friend_id: target_user.id,
                     user_id: response.user_id,
                     isaccept: 'accept',
-                    created_at: Date.now(),
+                    createdAt: Date.now(),
                 });
 
                 user.findOne({where: {id: response.user_id}}).then((user) => {
