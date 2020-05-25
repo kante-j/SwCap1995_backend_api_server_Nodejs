@@ -7,6 +7,7 @@ const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
 const push = require('../modules/push');
+const aws = require('../modules/aws');
 
 /* GET users listing. */
 
@@ -164,7 +165,8 @@ router.get('/is_face_detection/:user_id', function (req, res) {
  *        schema:
  *          type: string
  */
-router.post('/face_detection', function (req, res) {
+
+router.post('/face_detection', aws.upload.single('photo'), (req, res)=> {
     console.log(new Date());
     var user_id = req.body.user_id;
 
