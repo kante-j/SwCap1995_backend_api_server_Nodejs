@@ -46,6 +46,9 @@ module.exports = (sequelize, DataTypes) => {
     bet_money: {
       type: DataTypes.INTEGER
     },
+    plan_period: {
+      type: DataTypes.INTEGER
+    },
     status: {
       type: DataTypes.STRING
     },

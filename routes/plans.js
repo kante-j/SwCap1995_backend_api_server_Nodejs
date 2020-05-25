@@ -45,6 +45,9 @@ const {user, friend, plan} = require('../models');
  *     plan_start_day:
  *       type: string
  *       description: 플랜 plan_start_day
+ *     plan_period:
+ *       type: integer
+ *       description: 플랜 기간
  *     bet_money:
  *       type: string
  *       description: 플랜 bet_money
@@ -133,6 +136,7 @@ router.post('/', function (req, res) {
         custom_picture_rule_1: req.body.custom_picture_rule_1,
         custom_picture_rule_2: req.body.custom_picture_rule_2,
         custom_picture_rule_3: req.body.custom_picture_rule_3,
+        plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
@@ -152,6 +156,7 @@ router.post('/', function (req, res) {
         custom_picture_rule_1: response.custom_picture_rule_1,
         custom_picture_rule_2: response.custom_picture_rule_2,
         custom_picture_rule_3: response.custom_picture_rule_3,
+        plan_period: response.plan_period,
         picture_time: response.picture_time,
         createdAt: Date.now(),
         plan_start_day: response.plan_start_day,
