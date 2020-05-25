@@ -9,7 +9,7 @@ module.exports = {
             description: 'Make For node js test.'
         },
         // 주소
-        host: "http://49.50.172.58:3000",
+        host: "49.50.172.58:3000",
         // 기본 root path
         basePath: "/",
         contact: {
