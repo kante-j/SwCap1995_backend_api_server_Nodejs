@@ -4,11 +4,50 @@ const pushService = require('../modules/push');
 const {user, friend} = require('../models');
 // const {user} = require('../models');
 
+/**
+ * @swagger
+ * definitions:
+ *  friend:
+ *   type: object
+ *   properties:
+ *     id:
+ *       type: integer
+ *       description: friend id
+ *     user_id:
+ *       type: string
+ *       description: 유저 id
+ *     friend_id:
+ *       type: string
+ *       description: 친구 id
+ *     is_accept:
+ *       type: string
+ *       description: 현재 친구 수락 상태 여부
+ */
 
+
+
+/**
+ * @swagger
+ * paths:
+ *  /friends:
+ *    get:
+ *      tags:
+ *      - friend
+ *      description: 모든 친구목록을 가져온다.
+ *      produces:
+ *      - "application/xml"
+ *      - "applicaion/json"
+ *      responses:
+ *       200:
+ *        description: friends of column list
+ *        schema:
+ *          type: json
+ */
 router.get('/', function (req, res) {
     console.log(new Date());
     res.redirect('graphql?query={friendGet{id,user_id,friend_id}}');
 });
+
 
 
 router.get('/:user_id', function (req, res) {
