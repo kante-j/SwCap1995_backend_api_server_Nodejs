@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
     detailedCategory: {
       type: DataTypes.STRING
     },
+    image_url: {
+      type: DataTypes.STRING
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE

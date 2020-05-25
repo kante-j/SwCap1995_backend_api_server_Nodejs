@@ -172,7 +172,11 @@ router.post('/face_detection', aws.upload.single('photo'), (req, res)=> {
 
     user.findOne({where: {id: user_id}})
         .then((user) => {
-            res.send(user.is_face_detection);
+            user.update({
+               is_face_detection: 1
+            }).then(() =>{
+                res.send(200);
+            });
         }).catch(err => {
         console.log(err);
         res.send(500);
