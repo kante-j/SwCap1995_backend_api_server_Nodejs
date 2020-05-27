@@ -40,7 +40,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       picture_time: {
-        type: Sequelize.DATE
+        type: Sequelize.INTEGER
       },
       plan_start_day: {
         type: Sequelize.DATE

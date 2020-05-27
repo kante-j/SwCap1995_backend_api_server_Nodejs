@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     picture_time: {
-      type: DataTypes.DATE
+      type: DataTypes.INTEGER
     },
     plan_start_day: {
       type: DataTypes.DATE
