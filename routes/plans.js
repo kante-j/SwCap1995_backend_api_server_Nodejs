@@ -138,6 +138,7 @@ router.post('/', function (req, res) {
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
         distrib_method: req.body.distrib_method,
+        image_url: req.body.image_url,
         percent: req.body.percent,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
@@ -155,6 +156,7 @@ router.post('/', function (req, res) {
         category: response.category,
         detailedCategory: response.detailedCategory,
         percent: response.percent,
+        image_url: response.image_url,
         distrib_method: response.distrib_method,
         picture_rule_1: response.picture_rule_1,
         picture_rule_2: response.picture_rule_2,
@@ -248,7 +250,49 @@ router.get('/all/:user_id', function (req, res) {
 });
 
 
-router.get('/')
+/**
+ * @swagger
+ * paths:
+ *  /plans/watchingAll/{user_id}:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "감시중인 플랜 모두"
+ *      description: "Returns all 감시중인 plans"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - name: "user_id"
+ *        in: "path"
+ *        required: true
+ *        type: "integer"
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.get('/watchingAll/:user_id', function (req, res) {
+    console.log(new Date());
+
+    watcher.findAndCountAll({
+        where:{
+            user_id:req.params.user_id
+        }
+    }).then()
+
+    plan.findAndCountAll({
+        where: {
+            user_id: req.params.user_id
+        }
+    }).then((plans) => {
+        res.send(plans);
+    }).catch(err => {
+        console.log(err);
+        res.send(500)
+    })
+});
 
 
 module.exports = router;

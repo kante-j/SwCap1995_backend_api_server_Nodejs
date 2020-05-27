@@ -50,6 +50,9 @@ module.exports = (sequelize, DataTypes) => {
         bet_money: {
             type: DataTypes.INTEGER
         },
+        image_url: {
+            type: DataTypes.STRING
+        },
         percent: {
             type: DataTypes.INTEGER
         },
