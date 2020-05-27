@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-
-const {user, friend, plan} = require('../models');
+const pushService = require('../modules/push');
+const {user, plan, watcher, point} = require('../models');
 
 /**
  * @swagger
@@ -57,7 +57,6 @@ const {user, friend, plan} = require('../models');
  */
 
 
-
 /**
  * @swagger
  * paths:
@@ -85,17 +84,16 @@ router.get('/:plan_id', function (req, res) {
     console.log(new Date());
 
     plan.findOne({
-        where:{
+        where: {
             id: req.params.plan_id
         }
-    }).then((plan)=>{
+    }).then((plan) => {
         res.send(plan);
-    }).catch(err =>{
+    }).catch(err => {
         console.log(err);
         res.send(500)
     })
 });
-
 
 
 /**
@@ -125,11 +123,12 @@ router.get('/:plan_id', function (req, res) {
  */
 router.post('/', function (req, res) {
     console.log(new Date());
-
+    console.log(req)
     let response = {
         user_id: req.body.user_id,
         title: req.body.title,
         category: req.body.category,
+        detailedCategory: req.body.detailedCategory,
         picture_rule_1: req.body.picture_rule_1,
         picture_rule_2: req.body.picture_rule_2,
         picture_rule_3: req.body.picture_rule_3,
@@ -140,16 +139,19 @@ router.post('/', function (req, res) {
         picture_time: req.body.picture_time,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
-        bet_money: req.params.bet_money,
+        bet_money: req.body.bet_money,
         status: 'waiting',
-        is_public: req.params.is_public,
-
+        is_public: req.body.is_public,
+        spectors: req.body.spectors,
     };
+
+    let watchersList = response.spectors.split(',');
 
     plan.create({
         user_id: response.user_id,
         title: response.title,
         category: response.category,
+        detailedCategory: response.detailedCategory,
         picture_rule_1: response.picture_rule_1,
         picture_rule_2: response.picture_rule_2,
         picture_rule_3: response.picture_rule_3,
@@ -160,19 +162,47 @@ router.post('/', function (req, res) {
         picture_time: response.picture_time,
         createdAt: Date.now(),
         plan_start_day: response.plan_start_day,
-        bet_money: req.params.bet_money,
+        bet_money: response.bet_money,
         status: 'waiting',
-        is_public: req.params.is_public,
-    }).then(res.send(200))
-        .catch(err =>{
+        is_public: response.is_public,
+    }).then((temp_plan) => {
+            user.findAndCountAll({
+                where: {
+                    nickname: watchersList
+                }
+            }).then((watch_users) => {
+                watch_users.rows.map((user) => {
+                    point.create({
+                        user_id:1,
+                        class: 'challenge',
+                        amount: 3000,
+                        status:'waiting'
+                    });
+                    watcher.create({
+                        user_id: user.dataValues.id,
+                        plan_id: temp_plan.id,
+                        createdAt: Date.now(),
+                    }).then(() => {
+                        pushService.handlePushTokens(temp_plan.title + '의 감시가 시작되었습니다!',
+                            user.dataValues.deviceToken);
+                    }).catch(err => {
+                        console.log(err);
+                    });
+                })
+                res.sendStatus(200);
+
+            }).catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+            });
+        }
+    )
+        .catch(err => {
             console.log(err);
             res.send(500);
         });
 
-
-    console.log(req);
 });
-
 
 
 /**
@@ -202,12 +232,12 @@ router.get('/all/:user_id', function (req, res) {
     console.log(new Date());
 
     plan.findAndCountAll({
-        where:{
+        where: {
             user_id: req.params.user_id
         }
-    }).then((plans)=>{
+    }).then((plans) => {
         res.send(plans);
-    }).catch(err =>{
+    }).catch(err => {
         console.log(err);
         res.send(500)
     })

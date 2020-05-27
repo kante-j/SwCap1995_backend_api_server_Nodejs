@@ -13,6 +13,7 @@ var friendsRouter = require('./routes/friends');
 var pushRouter = require('./routes/push');
 var plansRouter = require('./routes/plans');
 var pointsRouter = require('./routes/points');
+var planTemplatesRouter = require('./routes/planTemplates');
 var detailedCategoriesRouter = require('./routes/detailedCategories');
 var testRouter = require('./routes/test');
 var {GraphQLSchema} = require('graphql');
@@ -49,6 +50,7 @@ app.use('/friends', friendsRouter);
 app.use('/test', testRouter);
 app.use('/push', pushRouter);
 app.use('/points', pointsRouter);
+app.use('/plan_templates', planTemplatesRouter);
 app.use('/plans', plansRouter);
 app.use('/detailedCategories',detailedCategoriesRouter);
 
