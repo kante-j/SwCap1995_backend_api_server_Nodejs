@@ -53,6 +53,9 @@ module.exports = (sequelize, DataTypes) => {
         percent: {
             type: DataTypes.INTEGER
         },
+        distrib_method:{
+            type: DataTypes.STRING
+        },
         plan_period: {
             type: DataTypes.INTEGER
         },

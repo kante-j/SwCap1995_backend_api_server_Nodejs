@@ -26,6 +26,9 @@ module.exports = (sequelize, DataTypes) => {
     authentication_way:{
       type: DataTypes.INTEGER
     },
+    image_url:{
+      type: DataTypes.STRING
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
