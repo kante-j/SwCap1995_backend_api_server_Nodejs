@@ -20,13 +20,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
     },
     picture_rule_1: {
-      type: DataTypes.INTEGER
+      type: DataTypes.STRING
     },
     picture_rule_2: {
-      type: DataTypes.INTEGER
+      type: DataTypes.STRING
     },
     picture_rule_3: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     custom_picture_rule_1: {
       type: DataTypes.STRING,
@@ -44,6 +44,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     },
     bet_money: {
+      type: DataTypes.INTEGER
+    },
+    percent: {
       type: DataTypes.INTEGER
     },
     plan_period: {

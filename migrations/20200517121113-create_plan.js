@@ -22,13 +22,13 @@ module.exports = {
         type: Sequelize.STRING(50),
       },
       picture_rule_1: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       picture_rule_2: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       picture_rule_3: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       custom_picture_rule_1: {
         type: Sequelize.STRING,
