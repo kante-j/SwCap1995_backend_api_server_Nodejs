@@ -23,6 +23,7 @@ const swaggerOption = require('./routes/swagger');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerSpec = swaggerJSDoc(swaggerOption);
 const swaggerUi = require('swagger-ui-express');
+const paginate = require('express-paginate');
 var options = {
     exclude: ["users"]
 };

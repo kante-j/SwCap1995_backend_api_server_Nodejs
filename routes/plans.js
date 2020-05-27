@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const pushService = require('../modules/push');
 const {user, plan, watcher, point} = require('../models');
+const paginate = require('express-paginate');
 
 /**
  * @swagger
@@ -56,6 +57,54 @@ const {user, plan, watcher, point} = require('../models');
  *       description: 플랜 status
  */
 
+/**
+ * @swagger
+ * paths:
+ *  /plans:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "get all plan"
+ *      description: "Returns all plan"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - in: path
+ *        name: limit
+ *        type: integer
+ *        required: true
+ *        description: pagination -> limit
+ *      - in: path
+ *        name: page
+ *        type: integer
+ *        required: true
+ *        description: pagination -> page number
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.use(paginate.middleware(10,50));
+router.get('/', async function (req, res) {
+    console.log(new Date());
+
+    // This example assumes you've previously defined `Users`
+    // as `const Users = db.model('Users')` if you are using `mongoose`
+    // and that you are using Node v7.6.0+ which has async/await support
+    plan.findAndCountAll({limit: req.query.limit, offset: req.skip})
+        .then(results => {
+            const itemCount = results.count;
+            const pageCount = Math.ceil(results.count / req.query.limit);
+            res.send({
+                users: results.rows,
+                pageCount,
+                itemCount,
+                pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+            });
+        }).catch(err => {console.log(err);next(err)})
+});
 
 /**
  * @swagger
