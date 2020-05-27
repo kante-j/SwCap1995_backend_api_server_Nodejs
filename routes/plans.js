@@ -190,7 +190,7 @@ router.post('/', function (req, res) {
                     }).catch(err => {
                         console.log(err);
                     });
-                })
+                });
                 res.sendStatus(200);
 
             }).catch(err => {
