@@ -98,7 +98,7 @@ router.get('/', async function (req, res) {
             const itemCount = results.count;
             const pageCount = Math.ceil(results.count / req.query.limit);
             res.send({
-                users: results.rows,
+                plans: results.rows,
                 pageCount,
                 itemCount,
                 pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
