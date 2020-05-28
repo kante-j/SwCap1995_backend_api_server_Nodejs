@@ -104,6 +104,11 @@ router.get('/waiting/:user_id', function (req, res) {
             } else {
                 res.sendStatus(500)
             }
+        }else{
+            let response = {}
+            response['count'] = 0;
+            response['rows']=[]
+            res.send(response)
         }
 
 
@@ -111,7 +116,6 @@ router.get('/waiting/:user_id', function (req, res) {
         res.send(err);
     });
 
-    return
 });
 
 var isEmpty = function (value) {
