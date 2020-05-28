@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   watcher.associate = function(models) {
     // associations can be defined here
+    watcher.belongsTo(models.plan, {as:'plan', foreignKey:'plan_id'});
   };
   return watcher;
 };

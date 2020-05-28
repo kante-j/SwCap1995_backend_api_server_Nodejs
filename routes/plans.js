@@ -325,22 +325,39 @@ router.get('/all/:user_id', function (req, res) {
 router.get('/watchingAll/:user_id', function (req, res) {
     console.log(new Date());
 
-    watcher.findAndCountAll({
+    let watchingPlanIds = [];
+    watcher.findAll({
         where:{
             user_id:req.params.user_id
         }
-    }).then()
+    }).then((watchers) =>{
+        watchers.map(temp =>{
+            watchingPlanIds.push(temp.dataValues.plan_id)
+        })
 
-    plan.findAndCountAll({
-        where: {
-            user_id: req.params.user_id
-        }
-    }).then((plans) => {
-        res.send(plans);
-    }).catch(err => {
+    }).then(() =>{
+        plan.findAndCountAll({
+            where:{
+                id: watchingPlanIds
+            }
+        }).then(plans =>{
+            res.send(plans);
+        })
+    }).catch(err =>{
         console.log(err);
-        res.send(500)
-    })
+        res.sendStatus(500);
+    });
+
+    // plan.findAndCountAll({
+    //     where: {
+    //         user_id: req.params.user_id
+    //     }
+    // }).then((plans) => {
+    //     res.send(plans);
+    // }).catch(err => {
+    //     console.log(err);
+    //     res.send(500)
+    // })
 });
 
 

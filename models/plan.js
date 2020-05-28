@@ -80,7 +80,10 @@ module.exports = (sequelize, DataTypes) => {
     plan.associate = function (models) {
         plan.belongsTo(models.user, {
             foreignKey: 'user_id',
-        })
+        });
+        plan.hasMany(models.watcher,{
+            foreignKey: 'plan_id',
+        });
     };
     return plan;
 };
