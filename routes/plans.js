@@ -454,6 +454,9 @@ router.get('/watchingAll/:user_id', function (req, res) {
 
     }).then(() => {
         plan.findAndCountAll({
+            include:[{
+                model:user
+            }],
             where: {
                 id: watchingPlanIds
             }

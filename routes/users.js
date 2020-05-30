@@ -326,7 +326,7 @@ router.get('/me/:user_id', function (req, res) {
         friend.findAndCountAll({
             where: {
                 friend_id: req.params.user_id,
-                status:'accept'
+                isaccept:'accept'
             }
         }).then(friendlist => {
             response['friend_count'] = friendlist.count;
