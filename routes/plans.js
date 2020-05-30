@@ -92,6 +92,7 @@ router.use(paginate.middleware(10, 50));
 router.get('/', async function (req, res) {
     console.log(new Date());
 
+
     // This example assumes you've previously defined `Users`
     // as `const Users = db.model('Users')` if you are using `mongoose`
     // and that you are using Node v7.6.0+ which has async/await support
@@ -152,7 +153,6 @@ router.get('/', async function (req, res) {
  *        schema:
  *          type: string
  */
-router.use(paginate.middleware(10, 50));
 router.get('/search', async function (req, res) {
     console.log(new Date());
 
@@ -216,6 +216,7 @@ router.get('/search', async function (req, res) {
             next(err)
         })
     }).catch(err => {
+        console.log(err);
         res.sendStatus(500)
     });
 
