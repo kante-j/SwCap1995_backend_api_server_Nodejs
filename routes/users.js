@@ -325,7 +325,8 @@ router.get('/me/:user_id', function (req, res) {
         //친구 몇명인지
         friend.findAndCountAll({
             where: {
-                friend_id: req.params.user_id
+                friend_id: req.params.user_id,
+                status:'accept'
             }
         }).then(friendlist => {
             response['friend_count'] = friendlist.count;

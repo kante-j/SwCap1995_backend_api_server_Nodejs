@@ -101,7 +101,7 @@ router.get('/', async function (req, res) {
                 plans: results.rows,
                 pageCount,
                 itemCount,
-                pages: paginate.getArrayPages(req)(3, pageCount, req.query.page)
+                pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
             });
         }).catch(err => {console.log(err);next(err)})
 });
