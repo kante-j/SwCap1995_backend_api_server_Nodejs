@@ -444,9 +444,6 @@ router.get('/watchingAll/:user_id', function (req, res) {
 
     let watchingPlanIds = [];
     watcher.findAll({
-        include:[{
-            model:user
-        }],
         where: {
             user_id: req.params.user_id
         }
