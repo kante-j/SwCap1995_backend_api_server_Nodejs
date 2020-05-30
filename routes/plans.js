@@ -3,6 +3,8 @@ var router = express.Router();
 const pushService = require('../modules/push');
 const {user, plan, watcher, point} = require('../models');
 const paginate = require('express-paginate');
+const sequelize = require("sequelize");
+const Op = sequelize.Op;
 
 /**
  * @swagger
@@ -86,14 +88,18 @@ const paginate = require('express-paginate');
  *        schema:
  *          type: string
  */
-router.use(paginate.middleware(10,50));
+router.use(paginate.middleware(10, 50));
 router.get('/', async function (req, res) {
     console.log(new Date());
 
     // This example assumes you've previously defined `Users`
     // as `const Users = db.model('Users')` if you are using `mongoose`
     // and that you are using Node v7.6.0+ which has async/await support
-    plan.findAndCountAll({limit: req.query.limit, offset: req.skip})
+    plan.findAndCountAll({
+        include: [{
+            model: user
+        }], limit: req.query.limit, offset: req.skip
+    })
         .then(results => {
             const itemCount = results.count;
             const pageCount = Math.ceil(results.count / req.query.limit);
@@ -103,7 +109,112 @@ router.get('/', async function (req, res) {
                 itemCount,
                 pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
             });
-        }).catch(err => {console.log(err);next(err)})
+        }).catch(err => {
+        console.log(err);
+        next(err)
+    })
+});
+
+/**
+ * @swagger
+ * paths:
+ *  /plans/search:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "get all plan"
+ *      description: "Returns all plan"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - in: path
+ *        name: limit
+ *        type: integer
+ *        required: false
+ *        description: pagination -> limit
+ *      - in: path
+ *        name: page
+ *        type: integer
+ *        required: false
+ *        description: pagination -> page number
+ *      - in: path
+ *        name: query
+ *        type: string
+ *        required: true
+ *        description: pagination -> query
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.use(paginate.middleware(10, 50));
+router.get('/search', async function (req, res) {
+    console.log(new Date());
+
+    let search_keyword = req.query.query;
+    // This example assumes you've previously defined `Users`
+    // as `const Users = db.model('Users')` if you are using `mongoose`
+    // and that you are using Node v7.6.0+ which has async/await support
+    let user_ids = [];
+
+    user.findAndCountAll({
+        where: {
+            nickname: {
+                [Op.like]: '%' + search_keyword + '%'
+            }
+        }
+    }).then(users => {
+        users.rows.map(item => {
+            user_ids.push(item.id);
+        });
+        console.log(user_ids);
+        plan.findAndCountAll({
+            include: [{
+                model: user
+            }],
+            where: {
+                [Op.or]: [
+                    {
+                        title: {
+                            [Op.like]: '%' + search_keyword + '%'
+                        }
+                    },
+                    {
+                        category: {
+                            [Op.like]: '%' + search_keyword + '%'
+                        }
+                    },
+                    {
+                        detailedCategory: {
+                            [Op.like]: '%' + search_keyword + '%'
+                        }
+                    },
+                    {
+                        user_id: user_ids
+                    }
+                ]
+            },
+            limit: req.query.limit, offset: req.skip
+        })
+            .then(results => {
+                const itemCount = results.count;
+                const pageCount = Math.ceil(results.count / req.query.limit);
+                res.send({
+                    plans: results.rows,
+                    pageCount,
+                    itemCount,
+                    pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
+                });
+            }).catch(err => {
+            console.log(err);
+            next(err)
+        })
+    }).catch(err => {
+        res.sendStatus(500)
+    });
+
 });
 
 /**
@@ -133,6 +244,9 @@ router.get('/:plan_id', function (req, res) {
     console.log(new Date());
 
     plan.findOne({
+        include:[{
+            model:user
+        }],
         where: {
             id: req.params.plan_id
         }
@@ -228,10 +342,10 @@ router.post('/', function (req, res) {
             }).then((watch_users) => {
                 watch_users.rows.map((user) => {
                     point.create({
-                        user_id:1,
+                        user_id: 1,
                         class: 'challenge',
                         amount: 3000,
-                        status:'waiting'
+                        status: 'waiting'
                     });
                     watcher.create({
                         user_id: user.dataValues.id,
@@ -287,6 +401,9 @@ router.get('/all/:user_id', function (req, res) {
     console.log(new Date());
 
     plan.findAndCountAll({
+        include:[{
+            model:user
+        }],
         where: {
             user_id: req.params.user_id
         }
@@ -327,23 +444,26 @@ router.get('/watchingAll/:user_id', function (req, res) {
 
     let watchingPlanIds = [];
     watcher.findAll({
-        where:{
-            user_id:req.params.user_id
+        include:[{
+            model:user
+        }],
+        where: {
+            user_id: req.params.user_id
         }
-    }).then((watchers) =>{
-        watchers.map(temp =>{
+    }).then((watchers) => {
+        watchers.map(temp => {
             watchingPlanIds.push(temp.dataValues.plan_id)
         })
 
-    }).then(() =>{
+    }).then(() => {
         plan.findAndCountAll({
-            where:{
+            where: {
                 id: watchingPlanIds
             }
-        }).then(plans =>{
+        }).then(plans => {
             res.send(plans);
         })
-    }).catch(err =>{
+    }).catch(err => {
         console.log(err);
         res.sendStatus(500);
     });
