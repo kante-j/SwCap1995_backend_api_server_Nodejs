@@ -42,7 +42,7 @@ const {detailedCategory} = require('../models');
  */
 router.get('/', function (req, res, next) {
     console.log(new Date());
-    res.redirect('graphql?query={detailedCategoryGet{id,topCategoryNum,detailedCategory,image_url}}');
+    res.redirect('graphql?query={detailedCategoryGet{id,topCategoryNum,detailedCategory,image_url,createdAt,updatedAt}}');
 });
 
 

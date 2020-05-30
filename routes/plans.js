@@ -98,7 +98,10 @@ router.get('/', async function (req, res) {
     plan.findAndCountAll({
         include: [{
             model: user
-        }], limit: req.query.limit, offset: req.skip
+        }],
+        limit: req.query.limit,
+        offset: req.skip,
+        order:[['updatedAt','desc'],['id','desc']]
     })
         .then(results => {
             const itemCount = results.count;
@@ -196,7 +199,8 @@ router.get('/search', async function (req, res) {
                     }
                 ]
             },
-            limit: req.query.limit, offset: req.skip
+            limit: req.query.limit, offset: req.skip,
+            order:[['updatedAt','desc'],['id','desc']]
         })
             .then(results => {
                 const itemCount = results.count;
@@ -249,7 +253,8 @@ router.get('/:plan_id', function (req, res) {
         }],
         where: {
             id: req.params.plan_id
-        }
+        },
+        order:[['updatedAt','desc'],['id','desc']]
     }).then((plan) => {
         res.send(plan);
     }).catch(err => {
@@ -406,7 +411,8 @@ router.get('/all/:user_id', function (req, res) {
         }],
         where: {
             user_id: req.params.user_id
-        }
+        },
+        order:[['updatedAt','desc'],['id','desc']]
     }).then((plans) => {
         res.send(plans);
     }).catch(err => {
@@ -446,7 +452,8 @@ router.get('/watchingAll/:user_id', function (req, res) {
     watcher.findAll({
         where: {
             user_id: req.params.user_id
-        }
+        },
+        order:[['updatedAt','desc'],['id','desc']]
     }).then((watchers) => {
         watchers.map(temp => {
             watchingPlanIds.push(temp.dataValues.plan_id)
