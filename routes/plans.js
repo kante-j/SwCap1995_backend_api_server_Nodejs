@@ -4,7 +4,40 @@ const pushService = require('../modules/push');
 const {user, plan, watcher, point} = require('../models');
 const paginate = require('express-paginate');
 const sequelize = require("sequelize");
+const multer = require("multer");
+const multerS3 = require('multer-s3');
+const secretKey = require('../secretKey')
+const AWS = require('aws-sdk');
+
+const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
+const region = 'kr-standard';
+const access_key = secretKey.ACCESS_KEY;
+const secret_key = secretKey.SECRET_KEY;
+
+const s3 = new AWS.S3({
+    endpoint: endpoint,
+    region: region,
+    credentials: {
+        accessKeyId : access_key,
+        secretAccessKey: secret_key
+    },
+});
+
+const uploadImage = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'swcap1995/plan_images',
+        acl: 'public-read',
+        metadata(req, file, cb) {
+            cb(null, {fieldName: file.fieldname});
+        },
+        key(req, file, cb) {
+            cb(null, Date.now().toString() + '.png');
+        }
+    })
+});
 const Op = sequelize.Op;
+
 
 /**
  * @swagger
@@ -290,9 +323,8 @@ router.get('/:plan_id', function (req, res) {
  *        schema:
  *          type: string
  */
-router.post('/', function (req, res) {
+router.post('/', uploadImage.single('photo'), function (req, res) {
     console.log(new Date());
-    console.log(req)
     let response = {
         user_id: req.body.user_id,
         title: req.body.title,
@@ -307,7 +339,7 @@ router.post('/', function (req, res) {
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
         distrib_method: req.body.distrib_method,
-        image_url: req.body.image_url,
+        image_url: 'https://kr.object.ncloudstorage.com/plan_images/'+req.file.key,
         percent: req.body.percent,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
@@ -317,6 +349,7 @@ router.post('/', function (req, res) {
         spectors: req.body.spectors,
     };
 
+    console.log(response);
     let watchersList = response.spectors.split(',');
 
     plan.create({
