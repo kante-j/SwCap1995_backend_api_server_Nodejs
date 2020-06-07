@@ -87,6 +87,12 @@ module.exports = (sequelize, DataTypes) => {
         plan.hasMany(models.watcher,{
             foreignKey: 'plan_id',
         });
+        plan.hasMany(models.daily_authentication,{
+            foreignKey: 'plan_id',
+        });
+        plan.hasMany(models.agreement,{
+            foreignKey: 'plan_id',
+        });
     };
     return plan;
 };

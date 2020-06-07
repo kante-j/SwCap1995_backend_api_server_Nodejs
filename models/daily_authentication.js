@@ -1,6 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const agreement = sequelize.define('agreement', {
+  const daily_authentication = sequelize.define('daily_authentication', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -13,14 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     plan_id: {
       type: DataTypes.INTEGER
     },
-    rule_1_point: {
-      type: DataTypes.INTEGER
+    is_correct:{
+      type: DataTypes.BOOLEAN
     },
-    rule_2_point: {
-      type: DataTypes.INTEGER
-    },
-    rule_3_point: {
-      type: DataTypes.INTEGER
+    image_url:{
+      type: DataTypes.BOOLEAN
     },
     createdAt: {
       allowNull: false,
@@ -31,9 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     }
   }, {});
-  agreement.associate = function(models) {
-    agreement.belongsTo(models.user, {foreignKey:'user_id'});
-    agreement.belongsTo(models.plan, {foreignKey:'plan_id'});
+  daily_authentication.associate = function(models) {
+    daily_authentication.belongsTo(models.user, {foreignKey: 'user_id'});
+    daily_authentication.belongsTo(models.plan, {foreignKey: 'plan_id'});
   };
-  return agreement;
+  return daily_authentication;
 };

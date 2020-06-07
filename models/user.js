@@ -68,6 +68,9 @@ module.exports = (sequelize, DataTypes) => {
         user.hasMany(models.point, {
             foreignKey: 'user_id'
         });
+        user.hasMany(models.daily_authentication, {
+            foreignKey: 'user_id'
+        });
 
     };
     return user;
