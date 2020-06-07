@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const {user, plan, watcher, point, agreement} = require('../models');
 
-router.get('/is_exist', function (req, res) {
+router.post('/is_exist', function (req, res) {
     console.log(new Date());
     let response = {
         user_id: req.body.user_id,
