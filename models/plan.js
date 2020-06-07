@@ -68,6 +68,9 @@ module.exports = (sequelize, DataTypes) => {
         is_public: {
             type: DataTypes.BOOLEAN
         },
+        is_custom: {
+            type: DataTypes.BOOLEAN
+        },
         createdAt: {
             allowNull: false,
             type: DataTypes.DATE

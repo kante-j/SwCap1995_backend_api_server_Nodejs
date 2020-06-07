@@ -344,6 +344,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
         bet_money: req.body.bet_money,
+        is_custom:req.body.is_custom,
         status: 'waiting',
         is_public: req.body.is_public,
         spectors: req.body.spectors,
@@ -369,6 +370,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         plan_period: response.plan_period,
         picture_time: response.picture_time,
         createdAt: Date.now(),
+        is_custom:response.is_custom,
         plan_start_day: response.plan_start_day,
         bet_money: response.bet_money,
         status: 'waiting',
@@ -395,6 +397,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
                             user.dataValues.deviceToken);
                     }).catch(err => {
                         console.log(err);
+                        res.sendStatus(500);
                     });
                 });
                 res.sendStatus(200);
@@ -407,7 +410,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
     )
         .catch(err => {
             console.log(err);
-            res.send(500);
+            res.sendStatus(500);
         });
 
 });
