@@ -13,6 +13,7 @@ var categoriesRouter = require('./routes/categories');
 var friendsRouter = require('./routes/friends');
 var pushRouter = require('./routes/push');
 var agreementsRouter = require('./routes/agreements');
+var dailyAuthenticationsRouter = require('./routes/dailyAuthentications');
 var plansRouter = require('./routes/plans');
 var pointsRouter = require('./routes/points');
 var planTemplatesRouter = require('./routes/planTemplates');
@@ -55,6 +56,7 @@ app.use('/push', pushRouter);
 app.use('/points', pointsRouter);
 app.use('/agreements',agreementsRouter);
 app.use('/plan_templates', planTemplatesRouter);
+app.use('/daily_authentications', dailyAuthenticationsRouter);
 app.use('/plans', plansRouter);
 app.use('/detailedCategories',detailedCategoriesRouter);
 
@@ -78,7 +80,7 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-cron.schedule('30 * * * * *', function(){
+cron.schedule('10 * * * *', function(){
     console.log('node-cron 실행 테스트');
 });
 

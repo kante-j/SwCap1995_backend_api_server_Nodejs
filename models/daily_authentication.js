@@ -13,8 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     plan_id: {
       type: DataTypes.INTEGER
     },
-    is_correct:{
-      type: DataTypes.BOOLEAN
+    comment:{
+      type: DataTypes.STRING
+    },
+    status:{
+      type: DataTypes.STRING
     },
     image_url:{
       type: DataTypes.BOOLEAN
