@@ -18,6 +18,7 @@
     "express-winston": "^4.0.3",
     "graphql": "^15.0.0",
     "http-errors": "~1.6.3",
+    "image-diff": "^2.0.0",
     "jade": "~1.11.0",
     "morgan": "~1.9.1",
     "multer": "^1.4.2",

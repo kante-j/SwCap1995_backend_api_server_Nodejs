@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const pushService = require('../modules/push');
-const {user, plan, watcher, point} = require('../models');
+const {user, plan, watcher, point, daily_authentication} = require('../models');
 const paginate = require('express-paginate');
 const sequelize = require("sequelize");
 const multer = require("multer");
@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
     endpoint: endpoint,
     region: region,
     credentials: {
-        accessKeyId : access_key,
+        accessKeyId: access_key,
         secretAccessKey: secret_key
     },
 });
@@ -135,7 +135,7 @@ router.get('/', async function (req, res) {
         }],
         limit: req.query.limit,
         offset: req.skip,
-        order:[['updatedAt','desc'],['id','desc']]
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
     })
         .then(results => {
             const itemCount = results.count;
@@ -233,7 +233,7 @@ router.get('/search', async function (req, res) {
                 ]
             },
             limit: req.query.limit, offset: req.skip,
-            order:[['updatedAt','desc'],['id','desc']]
+            order: [['updatedAt', 'desc'], ['id', 'desc']]
         })
             .then(results => {
                 const itemCount = results.count;
@@ -282,13 +282,13 @@ router.get('/:plan_id', function (req, res) {
     console.log(new Date());
 
     plan.findOne({
-        include:[{
-            model:user
+        include: [{
+            model: user
         }],
         where: {
             id: req.params.plan_id
         },
-        order:[['updatedAt','desc'],['id','desc']]
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
     }).then((plan) => {
         res.send(plan);
     }).catch(err => {
@@ -340,12 +340,12 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
         distrib_method: req.body.distrib_method,
-        image_url: 'https://kr.object.ncloudstorage.com/swcap1995/plan_images/'+req.file.key,
+        image_url: 'https://kr.object.ncloudstorage.com/swcap1995/plan_images/' + req.file.key,
         percent: req.body.percent,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
         bet_money: req.body.bet_money,
-        is_custom:req.body.is_custom,
+        is_custom: req.body.is_custom,
         status: 'waiting',
         is_public: req.body.is_public,
         spectors: req.body.spectors,
@@ -372,7 +372,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         plan_period: response.plan_period,
         picture_time: response.picture_time,
         createdAt: Date.now(),
-        is_custom:response.is_custom,
+        is_custom: response.is_custom,
         plan_start_day: response.plan_start_day,
         bet_money: response.bet_money,
         status: 'waiting',
@@ -444,16 +444,45 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
 router.get('/all/:user_id', function (req, res) {
     console.log(new Date());
 
+    let today = new Date();
+    let startdate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    let enddate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + (today.getDate()+1);
+    let time = '09:00:00';
+    let startTime = startdate + ' ' + time;
+    let endTime = enddate + ' ' + time;
     plan.findAndCountAll({
-        include:[{
-            model:user
-        }],
+        include: [
+            {
+                model: user
+            }],
         where: {
             user_id: req.params.user_id
         },
-        order:[['updatedAt','desc'],['id','desc']]
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
     }).then((plans) => {
-        res.send(plans);
+        daily_authentication.findAndCountAll({
+            where:{
+                [Op.or]: [{createdAt:{[Op.between]: [startTime,endTime]}}]
+            }
+        }).then(daily_authentications =>{
+
+            plan_ids = [];
+            plans.rows.map(plan_item=>{plan_ids.push(plan_item.id)});
+            daily_auth_ids =[];
+            daily_authentications.rows.map(daily_auth_item =>{daily_auth_ids.push(daily_auth_item.plan_id)});
+
+            for(let i=0; i<plan_ids.length; i++){
+                if(daily_auth_ids.includes(plan_ids[i])){
+                    plans.rows[i].dataValues['today_auth']=true
+                }else{
+                    plans.rows[i].dataValues['today_auth']=false
+                }
+            }
+
+            console.log(plans.rows[1].dataValues);
+            res.send(plans);
+        })
+        // res.send(plans);
     }).catch(err => {
         console.log(err);
         res.send(500)
@@ -492,7 +521,7 @@ router.get('/watchingAll/:user_id', function (req, res) {
         where: {
             user_id: req.params.user_id
         },
-        order:[['updatedAt','desc'],['id','desc']]
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
     }).then((watchers) => {
         watchers.map(temp => {
             watchingPlanIds.push(temp.dataValues.plan_id)
@@ -500,8 +529,8 @@ router.get('/watchingAll/:user_id', function (req, res) {
 
     }).then(() => {
         plan.findAndCountAll({
-            include:[{
-                model:user
+            include: [{
+                model: user
             }],
             where: {
                 id: watchingPlanIds

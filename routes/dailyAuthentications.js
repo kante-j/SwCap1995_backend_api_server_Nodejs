@@ -35,6 +35,11 @@ const uploadImage = multer({
     })
 });
 
+router.post('/face_detection', function (req, res) {
+    console.log(new Date());
+    res.sendStatus(200);
+});
+
 router.get('/:plan_id',function (req, res) {
     console.log(new Date());
 
