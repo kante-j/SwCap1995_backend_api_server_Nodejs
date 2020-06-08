@@ -481,6 +481,8 @@ router.get('/all/:user_id', function (req, res) {
 
             console.log(plans.rows[1].dataValues);
             res.send(plans);
+        }).catch(err =>{
+            res.send(plans);
         })
         // res.send(plans);
     }).catch(err => {
