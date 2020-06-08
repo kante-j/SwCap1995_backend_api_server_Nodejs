@@ -34,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
   daily_authentication.associate = function(models) {
     daily_authentication.belongsTo(models.user, {foreignKey: 'user_id'});
     daily_authentication.belongsTo(models.plan, {foreignKey: 'plan_id'});
+    daily_authentication.hasMany(models.daily_judge, {foreignKey: 'daily_auth_id'})
   };
   return daily_authentication;
 };
