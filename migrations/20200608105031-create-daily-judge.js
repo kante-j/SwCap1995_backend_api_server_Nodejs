@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       emoticon: {
-        type: Sequelize.integer
+        type: Sequelize.INTEGER
       },
       comment: {
         type: Sequelize.STRING
