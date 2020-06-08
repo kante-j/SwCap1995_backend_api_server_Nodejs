@@ -340,7 +340,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
         distrib_method: req.body.distrib_method,
-        image_url: 'https://kr.object.ncloudstorage.com/plan_images/'+req.file.key,
+        image_url: 'https://kr.object.ncloudstorage.com/swcap1995/plan_images/'+req.file.key,
         percent: req.body.percent,
         createdAt: Date.now(),
         plan_start_day: req.body.plan_start_day,
