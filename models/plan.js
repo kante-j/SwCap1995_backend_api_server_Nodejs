@@ -62,6 +62,9 @@ module.exports = (sequelize, DataTypes) => {
         plan_period: {
             type: DataTypes.INTEGER
         },
+        authentication_way: {
+            type: DataTypes.INTEGER
+        },
         status: {
             type: DataTypes.STRING
         },

@@ -10,12 +10,16 @@ module.exports = (sequelize, DataTypes) => {
     topCategoryNum: {
       type: DataTypes.INTEGER
     },
+    authentication_way: {
+      type: DataTypes.INTEGER
+    },
     detailedCategory: {
       type: DataTypes.STRING
     },
     image_url: {
       type: DataTypes.STRING
     },
+
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
