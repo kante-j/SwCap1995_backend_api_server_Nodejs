@@ -19,6 +19,7 @@ var plansRouter = require('./routes/plans');
 var pointsRouter = require('./routes/points');
 var planTemplatesRouter = require('./routes/planTemplates');
 var detailedCategoriesRouter = require('./routes/detailedCategories');
+var customerMessagesRouter = require('./routes/customerMessage');
 var testRouter = require('./routes/test');
 var {GraphQLSchema} = require('graphql');
 var bodyParser = require('body-parser');
@@ -59,6 +60,7 @@ app.use('/agreements',agreementsRouter);
 app.use('/plan_templates', planTemplatesRouter);
 app.use('/daily_judges', dailyJudgesRouter);
 app.use('/daily_authentications', dailyAuthenticationsRouter);
+app.use('/customer_service',customerMessagesRouter);
 app.use('/plans', plansRouter);
 app.use('/detailedCategories',detailedCategoriesRouter);
 

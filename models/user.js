@@ -74,6 +74,9 @@ module.exports = (sequelize, DataTypes) => {
         user.hasMany(models.daily_judge, {
             foreignKey: 'user_id'
         });
+        user.hasMany(models.customer_message, {
+            foreignKey: 'user_id'
+        });
 
     };
     return user;
