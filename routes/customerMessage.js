@@ -9,10 +9,12 @@ router.post('/inquiry',function (req, res) {
         title: req.body.title,
         message: req.body.message,
         message_type: req.body.message_type,
+        email: req.body.email,
     };
 
     customer_message.create({
         user_id: response.user_id,
+        email: response.email,
         title: response.title,
         message: response.message,
         message_type: response.message_type,

@@ -19,6 +19,12 @@ module.exports = (sequelize, DataTypes) => {
     message_type: {
       type: DataTypes.STRING
     },
+    email: {
+      type: DataTypes.STRING
+    },
+    answer: {
+      type: DataTypes.STRING
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE
