@@ -52,6 +52,7 @@ router.get('/:plan_id',function (req, res) {
         where:{
            plan_id: req.params.plan_id
         },
+        order: [['id', 'desc']]
     }).then((daily_auth) => {
         res.send(daily_auth);
     }).catch(err => {

@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const {user, friend, daily_judge, daily_authentication} = require('../models');
+const {user, friend, daily_judge, daily_authentication, daily_judge} = require('../models');
+
+router.get('')
 
 router.post('/', function (req, res) {
     console.log(new Date());
@@ -12,13 +14,14 @@ router.post('/', function (req, res) {
         comment: req.body.comment
     };
 
-    daily_authentication.create({
+    daily_judge.create({
         user_id: response.user_id,
         daily_auth_id: response.daily_auth_id,
         is_correct: response.is_correct,
         emoticon: response.emoticon,
         comment: response.comment
-    }).then(customer_message =>{
+    }).then(daily_judge =>{
+
         res.sendStatus(200);
     }).catch(err =>{
         console.log(err);
