@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {user, friend, daily_judge, daily_authentication, daily_judge} = require('../models');
+const {user, friend, daily_judge, daily_authentication} = require('../models');
 
 router.get('')
 
