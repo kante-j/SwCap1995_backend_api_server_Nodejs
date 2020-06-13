@@ -18,7 +18,7 @@ router.post('/is_exist', function (req, res) {
         }
     }).then(daily_judge =>{
         if(daily_judge.count != 0){
-            res.sendStatus(500)
+            res.send(daily_judge);
         }else{
             res.sendStatus(200);
         }
