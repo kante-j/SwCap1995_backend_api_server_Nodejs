@@ -12,7 +12,7 @@ class PushService {
     //     }
     // };
 
-    handlePushTokens = (message, token) => {
+    handlePushTokens = (message, token,title, whereToGo) => {
         let notifications = [];
         // for (let pushToken of token) {
         if (!Expo.isExpoPushToken(token)) {
@@ -22,9 +22,9 @@ class PushService {
         notifications.push({
             to: token,
             sound: 'default',
-            title: 'Message received!',
+            title: title,
             body: message,
-            data: {message}
+            data: {'screen': whereToGo}
         });
 
         let chunks = this.expo.chunkPushNotifications(notifications);

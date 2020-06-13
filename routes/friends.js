@@ -159,8 +159,8 @@ router.put('/add', function (req, res) {
                 createdAt: Date.now(),
             });
             user.findOne({where: {id: response.user_id}}).then((user) => {
-                pushService.handlePushTokens(user.nickname + '님이 친구요청을 보냈습니다',
-                    target_user.deviceToken);
+                pushService.handlePushTokens(user.nickname + '님이 친구가 되고싶어합니다😀!',
+                    target_user.deviceToken, '친구 요청', 'friend');
             }).then(() => {
                 res.send(200)
             }).catch(err => {
@@ -209,7 +209,7 @@ router.patch('/response', function (req, res) {
 
                 user.findOne({where: {id: response.user_id}}).then((user) => {
                     pushService.handlePushTokens(user.nickname + '님과 친구가 되었습니다!',
-                        target_user.deviceToken);
+                        target_user.deviceToken, '친구 수락', 'friend');
                 }).then(() => {
                     res.send(200)
                 }).catch(err => {

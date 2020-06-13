@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const {user, plan, watcher, point, agreement} = require('../models');
+const pushService = require('../modules/push');
 
 router.post('/is_exist', function (req, res) {
     console.log(new Date());
@@ -62,16 +63,25 @@ router.post('/', function (req, res) {
 
                 if(watcher_result.count == agreement_result.count){
                     plan.findOne({
+                        include:[{
+                            model:user
+                        }],
                         where:{id:response.plan_id}
                     }).then((plan_one)=>{
                         if(rule1>2.5 && rule2>2.5){
                             plan_one.update({
                                 status: 'start'
-                            })
+                            });
+                                pushService.handlePushTokens(plan_one.title+' 플랜이 시작되었습니다💪!!',
+                                    plan_one.user.deviceToken, '플랜 시작', 'home');
+
                         }else{
                             plan_one.update({
                                 status: 'reject'
-                            })
+                            });
+                            pushService.handlePushTokens(plan_one.title+' 플랜이 거절되었습니다😢 다시 플랜을 만들어주세요',
+                                plan_one.user.deviceToken, '플랜 거절', 'home');
+
                         }
                     })
                 }
