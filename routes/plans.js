@@ -454,6 +454,8 @@ router.get('/all/:user_id', function (req, res) {
         include: [
             {
                 model: user
+            },{
+            model:daily_authentication
             }],
         where: {
             user_id: req.params.user_id
@@ -483,8 +485,8 @@ router.get('/all/:user_id', function (req, res) {
                     plans.rows[i].dataValues['today_auth'] = false
                 }
             }
+            plans['count']=plans.rows.length
 
-            console.log(plans.rows[1].dataValues);
             res.send(plans);
         }).catch(err => {
             res.send(plans);
@@ -538,12 +540,15 @@ router.get('/watchingAll/:user_id', function (req, res) {
         plan.findAndCountAll({
             include: [{
                 model: user
+            },{
+                model: daily_authentication
             }],
             where: {
                 id: watchingPlanIds
             },
             order: [['updatedAt', 'desc'], ['id', 'desc']]
         }).then(plans => {
+            plans['count'] = plans.rows.length;
             res.send(plans);
         })
     }).catch(err => {
