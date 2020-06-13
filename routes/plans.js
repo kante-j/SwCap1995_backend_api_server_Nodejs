@@ -446,7 +446,7 @@ router.get('/all/:user_id', function (req, res) {
 
     let today = new Date();
     let startdate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    let enddate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + (today.getDate()+1);
+    let enddate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + (today.getDate() + 1);
     let time = '09:00:00';
     let startTime = startdate + ' ' + time;
     let endTime = enddate + ' ' + time;
@@ -454,8 +454,6 @@ router.get('/all/:user_id', function (req, res) {
         include: [
             {
                 model: user
-            },{
-            model: daily_authentication
             }],
         where: {
             user_id: req.params.user_id
@@ -463,27 +461,32 @@ router.get('/all/:user_id', function (req, res) {
         order: [['updatedAt', 'desc'], ['id', 'desc']]
     }).then((plans) => {
         daily_authentication.findAndCountAll({
-            where:{
-                [Op.or]: [{createdAt:{[Op.between]: [startTime,endTime]}}]
+            where: {
+                [Op.or]: [{createdAt: {[Op.between]: [startTime, endTime]}}]
             }
-        }).then(daily_authentications =>{
+        }).then(daily_authentications => {
 
             plan_ids = [];
-            plans.rows.map(plan_item=>{plan_ids.push(plan_item.id)});
-            daily_auth_ids =[];
-            daily_authentications.rows.map(daily_auth_item =>{daily_auth_ids.push(daily_auth_item.plan_id)});
+            plans.rows.map(plan_item => {
+                plan_ids.push(plan_item.id)
+            });
+            daily_auth_ids = [];
+            daily_authentications.rows.map(daily_auth_item => {
+                daily_auth_ids.push(daily_auth_item.plan_id)
+            });
 
-            for(let i=0; i<plan_ids.length; i++){
-                if(daily_auth_ids.includes(plan_ids[i])){
-                    plans.rows[i].dataValues['today_auth']=true
-                }else{
-                    plans.rows[i].dataValues['today_auth']=false
+
+            for (let i = 0; i < plan_ids.length; i++) {
+                if (daily_auth_ids.includes(plan_ids[i])) {
+                    plans.rows[i].dataValues['today_auth'] = true
+                } else {
+                    plans.rows[i].dataValues['today_auth'] = false
                 }
             }
 
             console.log(plans.rows[1].dataValues);
             res.send(plans);
-        }).catch(err =>{
+        }).catch(err => {
             res.send(plans);
         })
         // res.send(plans);
@@ -535,8 +538,6 @@ router.get('/watchingAll/:user_id', function (req, res) {
         plan.findAndCountAll({
             include: [{
                 model: user
-            },{
-                model: daily_authentication
             }],
             where: {
                 id: watchingPlanIds
