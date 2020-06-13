@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         weight: {
             allowNull: true,
-            type: DataTypes.INTEGER,
+            type: DataTypes.DOUBLE,
         },
         createdAt: {
             allowNull: false,

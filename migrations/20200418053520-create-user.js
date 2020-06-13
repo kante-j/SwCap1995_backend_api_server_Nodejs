@@ -35,7 +35,7 @@ module.exports = {
             },
             weight: {
               allowNull: true,
-                type: Sequelize.INTEGER,
+                type: Sequelize.DOUBLE,
             },
             createAt: {
                 allowNull: false,
