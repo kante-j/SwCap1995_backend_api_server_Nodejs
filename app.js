@@ -1,34 +1,37 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var morganlogger = require('morgan');
-var cron = require('node-cron');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const morganlogger = require('morgan');
+const cron = require('node-cron');
 const logger = require('./logger');
 const expressWinston = require('express-winston');
 const graphqlHTTP = require('express-graphql');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var categoriesRouter = require('./routes/categories');
-var friendsRouter = require('./routes/friends');
-var pushRouter = require('./routes/push');
-var agreementsRouter = require('./routes/agreements');
-var dailyAuthenticationsRouter = require('./routes/dailyAuthentications');
-var dailyJudgesRouter = require('./routes/dailyJudges');
-var plansRouter = require('./routes/plans');
-var pointsRouter = require('./routes/points');
-var planTemplatesRouter = require('./routes/planTemplates');
-var detailedCategoriesRouter = require('./routes/detailedCategories');
-var customerMessagesRouter = require('./routes/customerMessage');
-var testRouter = require('./routes/test');
-var {GraphQLSchema} = require('graphql');
-var bodyParser = require('body-parser');
-var swaggerDoc = require('./routes/swaggerDoc')
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const categoriesRouter = require('./routes/categories');
+const friendsRouter = require('./routes/friends');
+const pushRouter = require('./routes/push');
+const agreementsRouter = require('./routes/agreements');
+const dailyAuthenticationsRouter = require('./routes/dailyAuthentications');
+const dailyJudgesRouter = require('./routes/dailyJudges');
+const plansRouter = require('./routes/plans');
+const pointsRouter = require('./routes/points');
+const noticesRouter = require('./routes/notices');
+const planTemplatesRouter = require('./routes/planTemplates');
+const detailedCategoriesRouter = require('./routes/detailedCategories');
+const customerMessagesRouter = require('./routes/customerMessage');
+const testRouter = require('./routes/test');
+const pushTestRouter = require('./routes/push_test');
+const {GraphQLSchema} = require('graphql');
+const bodyParser = require('body-parser');
+const swaggerDoc = require('./routes/swaggerDoc');
 const swaggerOption = require('./routes/swagger');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerSpec = swaggerJSDoc(swaggerOption);
 const swaggerUi = require('swagger-ui-express');
 const paginate = require('express-paginate');
+const {test} = require('./cron_jobs/dailyJudgeAfterOneday');
 var options = {
     exclude: ["users"]
 };
@@ -55,6 +58,8 @@ app.use('/categories', categoriesRouter);
 app.use('/friends', friendsRouter);
 app.use('/test', testRouter);
 app.use('/push', pushRouter);
+app.use('/notices', noticesRouter);
+app.use('/push_test', pushTestRouter);
 app.use('/points', pointsRouter);
 app.use('/agreements',agreementsRouter);
 app.use('/plan_templates', planTemplatesRouter);
@@ -85,7 +90,7 @@ app.use(function (req, res, next) {
 });
 
 cron.schedule('10 * * * *', function(){
-    console.log('node-cron 실행 테스트');
+    test();
 });
 
 // error handler
