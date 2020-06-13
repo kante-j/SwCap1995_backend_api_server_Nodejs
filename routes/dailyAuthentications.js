@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {user, plan, watcher, point, agreement, daily_authentication} = require('../models');
+const {user, plan, watcher, point, agreement, daily_judge, daily_authentication} = require('../models');
 
 const multer = require("multer");
 const multerS3 = require('multer-s3');
@@ -45,9 +45,7 @@ router.get('/:plan_id',function (req, res) {
 
     daily_authentication.findAndCountAll({
         include: [{
-            model: plan,
-            as: "plan",
-            attributes: [],
+            model: daily_judge
         }],
         where:{
            plan_id: req.params.plan_id

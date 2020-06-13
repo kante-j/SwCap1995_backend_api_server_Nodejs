@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   daily_judge.associate = function(models) {
     daily_judge.belongsTo(models.user, {foreignKey: 'user_id'});
-    daily_judge.belongsTo(models.daily_authentication, {foreignKey: 'daily_auth_id'});
+    daily_judge.belongsTo(models.daily_authentication, {foreignKey: 'daily_auth_id', onUpdate: 'cascade'});
   };
   return daily_judge;
 };

@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const {user, friend, daily_judge, daily_authentication} = require('../models');
+const {user, plan, friend, watcher, daily_judge, daily_authentication} = require('../models');
 
-router.get('')
+router.post('/')
 
 router.post('/', function (req, res) {
     console.log(new Date());
@@ -14,19 +14,52 @@ router.post('/', function (req, res) {
         comment: req.body.comment
     };
 
-    daily_judge.create({
-        user_id: response.user_id,
-        daily_auth_id: response.daily_auth_id,
-        is_correct: response.is_correct,
-        emoticon: response.emoticon,
-        comment: response.comment
-    }).then(daily_judge =>{
+    daily_authentication.findOne({
+        include:[{
+            model: plan
+        }],
+        where:{
+            id: response.daily_auth_id
+        }
+    }).then(daily_auth =>{
+        watcher.findAndCountAll({
+            where:{
+                plan_id: daily_auth.plan.id
+            }
+        }).then((watcher_items) =>{
+            // 감시자 수 계산 => 일일 감시 수랑 계산해서
+            let watcher_count = watcher_items.count;
 
-        res.sendStatus(200);
-    }).catch(err =>{
-        console.log(err);
-        res.sendStatus(500);
-    });
+                daily_judge.create({
+                    user_id: response.user_id,
+                    daily_auth_id: response.daily_auth_id,
+                    is_correct: response.is_correct,
+                    emoticon: response.emoticon,
+                    comment: response.comment
+                }).then(daily_judge_item => {
+
+                    daily_judge.findAndCountAll({
+                        where:{
+                            daily_auth_id: response.daily_auth_id
+                        }
+                    }).then(daily_judge_items =>{
+                        let daily_judge_count = daily_judge_items.count;
+                        if(watcher_count === daily_judge_count){
+                            daily_auth.update({status:'done'});
+                        }
+
+                        res.sendStatus(200);
+                    });
+
+                }).catch(err => {
+                    console.log(err);
+                    res.sendStatus(500);
+                });
+
+
+
+        })
+    })
 });
 
 module.exports = router;
