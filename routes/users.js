@@ -1,17 +1,45 @@
-const {awsService} = require('../modules/aws')
 var express = require('express');
 var router = express.Router();
 var request = require('request');
 const crypto = require('crypto');
-const {user, friend, point} = require('../models');
+const {user, friend, point, user_image} = require('../models');
 const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
 const push = require('../modules/push');
-// const aws = require('../modules/aws');
+const multer = require("multer");
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 
-const bucket_name = 'user_images';
-const awsUpload = new awsService(bucket_name);
+const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
+const region = 'kr-standard';
+const access_key = secretKey.ACCESS_KEY;
+const secret_key = secretKey.SECRET_KEY;
+
+const s3 = new AWS.S3({
+    endpoint: endpoint,
+    region: region,
+    credentials: {
+        accessKeyId: access_key,
+        secretAccessKey: secret_key
+    },
+});
+
+
+const uploadImage = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: 'swcap1995/user_images',
+        acl: 'public-read',
+        metadata(req, file, cb) {
+            cb(null, {fieldName: file.fieldname});
+        },
+        key(req, file, cb) {
+            cb(null, Date.now().toString() + '.png');
+        }
+    })
+});
+// const awsUpload = new awsService(bucket_name);
 /* GET users listing. */
 
 var query = 'select * from Users';
@@ -169,7 +197,7 @@ router.get('/is_face_detection/:user_id', function (req, res) {
  *          type: string
  */
 
-router.post('/face_detection', awsUpload.upload.single('photo'), (req, res)=> {
+router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
     console.log(new Date());
     var user_id = req.body.user_id;
 
@@ -178,7 +206,12 @@ router.post('/face_detection', awsUpload.upload.single('photo'), (req, res)=> {
             user.update({
                is_face_detection: 1
             }).then(() =>{
-                res.send(200);
+                user_image.create({
+                    user_id: req.body.user_id,
+                    image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
+                }).then(() =>{
+                    res.send(200);
+                })
             });
         }).catch(err => {
         console.log(err);
