@@ -31,7 +31,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerSpec = swaggerJSDoc(swaggerOption);
 const swaggerUi = require('swagger-ui-express');
 const paginate = require('express-paginate');
-const {test} = require('./cron_jobs/dailyJudgeAfterOneday');
+const dailyJudgeAfterOneday = require('./cron_jobs/dailyJudgeAfterOneday.js');
 var options = {
     exclude: ["users"]
 };
@@ -89,8 +89,8 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-cron.schedule('10 * * * *', function(){
-    test();
+cron.schedule('* */1 * * *', function(){
+    dailyJudgeAfterOneday.authIsDone()
 });
 
 // error handler
