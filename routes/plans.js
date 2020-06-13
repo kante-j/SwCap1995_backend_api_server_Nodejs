@@ -454,6 +454,8 @@ router.get('/all/:user_id', function (req, res) {
         include: [
             {
                 model: user
+            },{
+            model: daily_authentication
             }],
         where: {
             user_id: req.params.user_id
@@ -533,10 +535,13 @@ router.get('/watchingAll/:user_id', function (req, res) {
         plan.findAndCountAll({
             include: [{
                 model: user
+            },{
+                model: daily_authentication
             }],
             where: {
                 id: watchingPlanIds
-            }
+            },
+            order: [['updatedAt', 'desc'], ['id', 'desc']]
         }).then(plans => {
             res.send(plans);
         })
