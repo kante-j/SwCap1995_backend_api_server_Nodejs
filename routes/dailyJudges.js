@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 const {user, plan, friend, watcher, daily_judge, daily_authentication} = require('../models');
 
-router.post('/')
-
 router.post('/', function (req, res) {
     console.log(new Date());
     let response = {
@@ -22,6 +20,7 @@ router.post('/', function (req, res) {
             id: response.daily_auth_id
         }
     }).then(daily_auth =>{
+        console.log(daily_auth.plan);
         watcher.findAndCountAll({
             where:{
                 plan_id: daily_auth.plan.id
