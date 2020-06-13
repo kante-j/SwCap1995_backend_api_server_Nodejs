@@ -110,4 +110,5 @@ temp/
 
 config.js
 secretKey.js
+generateFiles/
 # End of https://www.gitignore.io/api/node

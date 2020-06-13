@@ -1,3 +1,4 @@
+const {awsService} = require('../modules/aws')
 var express = require('express');
 var router = express.Router();
 var request = require('request');
@@ -7,8 +8,10 @@ const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
 const push = require('../modules/push');
-const aws = require('../modules/aws');
+// const aws = require('../modules/aws');
 
+const bucket_name = 'user_images';
+const awsUpload = new awsService(bucket_name);
 /* GET users listing. */
 
 var query = 'select * from Users';
@@ -166,7 +169,7 @@ router.get('/is_face_detection/:user_id', function (req, res) {
  *          type: string
  */
 
-router.post('/face_detection', aws.upload.single('photo'), (req, res)=> {
+router.post('/face_detection', awsUpload.upload.single('photo'), (req, res)=> {
     console.log(new Date());
     var user_id = req.body.user_id;
 
