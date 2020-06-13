@@ -17,11 +17,7 @@ router.post('/is_exist', function (req, res) {
             daily_auth_id:response.daily_auth_id,
         }
     }).then(daily_judge =>{
-        if(daily_judge.count != 0){
-            res.send(daily_judge);
-        }else{
-            res.sendStatus(200);
-        }
+        res.send(daily_judge);
     }).catch(err=>{
         console.log(err);
         res.sendStatus(503);
