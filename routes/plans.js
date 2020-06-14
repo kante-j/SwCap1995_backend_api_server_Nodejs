@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const pushService = require('../modules/push');
-const {user, plan, watcher, point, daily_authentication} = require('../models');
+const {user, plan, watcher, point, daily_authentication, user_image} = require('../models');
 const paginate = require('express-paginate');
 const sequelize = require("sequelize");
 const multer = require("multer");
@@ -456,6 +456,8 @@ router.get('/all/:user_id', function (req, res) {
                 model: user
             },{
             model:daily_authentication
+            },{
+            model: user_image
             }],
         where: {
             user_id: req.params.user_id
@@ -568,5 +570,14 @@ router.get('/watchingAll/:user_id', function (req, res) {
     // })
 });
 
+
+
+router.get('/detail/:plan_id', async function (req, res) {
+    console.log(new Date());
+
+    let plan_id = req.params.plane_id;
+
+
+});
 
 module.exports = router;

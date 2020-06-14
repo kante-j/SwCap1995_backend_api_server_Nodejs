@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var request = require('request');
+// var request = require('request');
 const crypto = require('crypto');
 const {user, friend, point, user_image} = require('../models');
 const secretKey = require('../secretKey');
@@ -10,6 +10,7 @@ const push = require('../modules/push');
 const multer = require("multer");
 const multerS3 = require('multer-s3');
 const AWS = require('aws-sdk');
+const request = require('request').defaults({ encoding: null });
 
 const endpoint = new AWS.Endpoint('https://kr.object.ncloudstorage.com');
 const region = 'kr-standard';
@@ -25,6 +26,8 @@ const s3 = new AWS.S3({
     },
 });
 
+const BASE_URL = secretKey.KAIROUS_BASE_URL;
+const HEADERS = secretKey.KAIROUS_HEADERS;
 
 const uploadImage = multer({
     storage: multerS3({
@@ -197,6 +200,21 @@ router.get('/is_face_detection/:user_id', function (req, res) {
  *          type: string
  */
 
+const enroll = async (userId, base64) => {
+    console.log('유저 아이디', userId);
+    const rawResponse = await fetch(`${BASE_URL}enroll`, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({
+            image: base64,
+            subject_id: `MySocial_${userId}`,
+            gallery_name: 'MyGallery',
+        }),
+    });
+    const content = await rawResponse.json();
+    return content;
+};
+
 router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
     console.log(new Date());
     var user_id = req.body.user_id;
@@ -209,7 +227,23 @@ router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
                 user_image.create({
                     user_id: req.body.user_id,
                     image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
-                }).then(() =>{
+                }).then((user_image) =>{
+                    user_image.image_url
+
+                    request.get(user_image.image_url, function (error, response, body) {
+                        if (!error && response.statusCode == 200) {
+                            data = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+                            enroll(user_id, data).then(content =>{
+                                console.log(content);
+                                user_image.update({
+                                    face_id: content.face_id
+                                })
+                            }).catch(err =>{
+                                console.log(err);
+                                res.sendStatus(500);
+                            });
+                        }
+                    });
                     res.send(200);
                 })
             });

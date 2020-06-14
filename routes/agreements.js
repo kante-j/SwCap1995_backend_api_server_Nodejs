@@ -3,6 +3,58 @@ var router = express.Router();
 const {user, plan, watcher, point, agreement} = require('../models');
 const pushService = require('../modules/push');
 
+/**
+ * @swagger
+ * definitions:
+ *  agreement:
+ *   type: object
+ *   properties:
+ *     id:
+ *       type: integer
+ *       description: agreement id
+ *     user_id:
+ *       type: string
+ *       description: 유저 id
+ *     plan_id:
+ *       type: string
+ *       description: plan id
+ *     rule_1_point:
+ *       type: integer
+ *       description: 합의 규칙 점수 1번
+ *     rule_2_point:
+ *       type: integer
+ *       description: 합의 규칙 점수 2번
+ *     rule_3_point:
+ *       type: boolean
+ *       description: 합의 규칙 점수 3번
+ */
+
+/**
+ * @swagger
+ * paths:
+ *  /agreements/is_exist:
+ *    post:
+ *      tags:
+ *      - agreement
+ *      summary: "is exist agreements"
+ *      description: "Returns if exist agreement about plan"
+ *      consumes:
+ *      - "application/json"
+ *      - "application/xml"
+ *      - x-www-form-urlencoded
+ *      parameters:
+ *      - name: user_id
+ *        in: body
+ *        required: true
+ *        type: integer
+ *      produces:
+ *      - application/json
+ *      responses:
+ *       200:
+ *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ */
 router.post('/is_exist', function (req, res) {
     console.log(new Date());
     let response = {
