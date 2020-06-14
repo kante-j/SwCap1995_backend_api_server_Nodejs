@@ -23,7 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {});
   user_image.associate = function(models) {
-    // associations can be defined here
+    user_image.belongsTo(models.user, {
+      foreignKey: 'user_id'
+    });
   };
   return user_image;
 };

@@ -453,11 +453,12 @@ router.get('/all/:user_id', function (req, res) {
     plan.findAndCountAll({
         include: [
             {
-                model: user
+                model: user,
+                include:[{
+                    model: user_image
+                }]
             },{
             model:daily_authentication
-            },{
-            model: user_image
             }],
         where: {
             user_id: req.params.user_id

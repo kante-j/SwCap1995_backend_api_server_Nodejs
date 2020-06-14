@@ -77,6 +77,9 @@ module.exports = (sequelize, DataTypes) => {
         user.hasMany(models.customer_message, {
             foreignKey: 'user_id'
         });
+        user.hasOne(models.user_image, {
+            foreignKey: 'user_id'
+        });
 
     };
     return user;
