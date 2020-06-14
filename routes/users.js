@@ -224,28 +224,47 @@ router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
             user.update({
                is_face_detection: 1
             }).then(() =>{
-                user_image.create({
-                    user_id: req.body.user_id,
-                    image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
-                }).then((user_image) =>{
-                    user_image.image_url
+                request.get('https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key, function (error, response, body) {
+                    if (!error && response.statusCode == 200) {
+                        data = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+                        enroll(user_id, data).then(content =>{
+                            console.log(content);
+                            user_image.create({
+                                face_id: content.face_id,
+                                user_id: req.body.user_id,
+                                image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
+                            }).then(() =>{
+                                res.sendStatus(200);
+                            })
+                        }).catch(err =>{
+                            console.log(err);
+                            res.sendStatus(500);
+                        });
+                    }
+                });
 
-                    request.get(user_image.image_url, function (error, response, body) {
-                        if (!error && response.statusCode == 200) {
-                            data = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
-                            enroll(user_id, data).then(content =>{
-                                console.log(content);
-                                user_image.update({
-                                    face_id: content.face_id
-                                })
-                            }).catch(err =>{
-                                console.log(err);
-                                res.sendStatus(500);
-                            });
-                        }
-                    });
-                    res.send(200);
-                })
+                // user_image.create({
+                //     user_id: req.body.user_id,
+                //     image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
+                // }).then((user_image) =>{
+                //     user_image.image_url
+                //
+                //     request.get(user_image.image_url, function (error, response, body) {
+                //         if (!error && response.statusCode == 200) {
+                //             data = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
+                //             enroll(user_id, data).then(content =>{
+                //                 console.log(content);
+                //                 user_image.update({
+                //                     face_id: content.face_id
+                //                 })
+                //             }).catch(err =>{
+                //                 console.log(err);
+                //                 res.sendStatus(500);
+                //             });
+                //         }
+                //     });
+                //     res.send(200);
+                // })
             });
         }).catch(err => {
         console.log(err);

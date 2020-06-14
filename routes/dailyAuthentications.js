@@ -52,6 +52,7 @@ router.get('/:plan_id',function (req, res) {
         },
         order: [['id', 'desc']]
     }).then((daily_auth) => {
+        daily_auth['count'] = daily_auth.rows.length;
         res.send(daily_auth);
     }).catch(err => {
         console.log(err);
