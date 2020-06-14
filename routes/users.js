@@ -229,8 +229,10 @@ router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
                         data = "data:" + response.headers["content-type"] + ";base64," + Buffer.from(body).toString('base64');
                         enroll(user_id, data).then(content =>{
                             console.log(content);
+                            console.log(content.face_id);
+                            console.log(typeof content.face_id);
                             user_image.create({
-                                face_id: content.face_id,
+                                face_id: content['face_id'],
                                 user_id: req.body.user_id,
                                 image_url: 'https://kr.object.ncloudstorage.com/swcap1995/user_images/' + req.file.key,
                             }).then(() =>{
