@@ -2,6 +2,21 @@ var express = require('express');
 var router = express.Router();
 const {customer_message} = require('../models');
 
+router.get('/:user_id', function (req, res) {
+    console.log(new Date());
+    let user_id = req.params.user_id;
+
+    customer_message.findAndCountAll({
+        where:{
+            user_id: user_id
+        }
+    }).then(customer_messages =>{
+        res.send(customer_messages)
+    }).catch(err =>{
+        res.sendStatus(500)
+    })
+})
+
 router.post('/inquiry',function (req, res) {
     console.log(new Date());
     let response = {
