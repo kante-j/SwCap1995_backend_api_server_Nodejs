@@ -258,6 +258,158 @@ router.get('/search', async function (req, res) {
 /**
  * @swagger
  * paths:
+ *  /plans/filter_age:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "get all plan"
+ *      description: "Returns all plan"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - in: path
+ *        name: limit
+ *        type: integer
+ *        required: false
+ *        description: pagination -> limit
+ *      - in: path
+ *        name: page
+ *        type: integer
+ *        required: false
+ *        description: pagination -> page number
+ *      - in: path
+ *        name: age
+ *        type: string
+ *        required: true
+ *        description: pagination -> query
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.get('/filter_age', async function (req, res) {
+    console.log(new Date());
+
+    let age = req.query.age;
+
+    let start_age = age;
+    let end_age;
+
+    if(start_age == 10){
+        end_age = 19
+    }else if(start_age ==20){
+        end_age = 29
+    }else if(start_age ==30){
+        end_age = 39
+    }else if(start_age ==40){
+        end_age = 49
+    }else if(start_age ==50){
+        end_age = 100
+    }
+    let user_ids = [];
+
+    plan.findAndCountAll({
+        include: [{
+            model: user,
+            where:{
+                [Op.or]: [{
+                    age: {
+                        [Op.between]: [start_age, end_age]
+                    }
+                }]
+            }
+        }],
+        limit: req.query.limit, offset: req.skip,
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
+    }).then(results =>{
+        const itemCount = results.count;
+                    const pageCount = Math.ceil(results.count / req.query.limit);
+                    res.send({
+                        plans: results.rows,
+                        pageCount,
+                        itemCount,
+                        pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
+                    });
+    }).catch(err =>{
+        res.sendStatus(500);
+    });
+
+});
+
+
+/**
+ * @swagger
+ * paths:
+ *  /plans/filter_category:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "get all plan"
+ *      description: "Returns all plan"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - in: path
+ *        name: limit
+ *        type: integer
+ *        required: false
+ *        description: pagination -> limit
+ *      - in: path
+ *        name: page
+ *        type: integer
+ *        required: false
+ *        description: pagination -> page number
+ *      - in: path
+ *        name: age
+ *        type: string
+ *        required: true
+ *        description: pagination -> query
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.get('/filter_category', async function (req, res) {
+    console.log(new Date());
+
+    let category = req.query.category;
+
+    let user_ids = [];
+
+    plan.findAndCountAll({
+        include: [{
+            model: user,
+        }],
+        where:{
+            [Op.or]:[{category: {
+                    [Op.like]: '%' + category + '%'
+                }}]
+        },
+        limit: req.query.limit, offset: req.skip,
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
+    }).then(results =>{
+        const itemCount = results.count;
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        res.send({
+            plans: results.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
+        });
+    }).catch(err =>{
+        res.sendStatus(500);
+    });
+
+});
+
+
+/**
+ * @swagger
+ * paths:
  *  /plans/{plan_id}:
  *    get:
  *      tags:
