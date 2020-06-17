@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+const pushService = require('../modules/push');
 const {user, point} = require('../models');
 
 router.post('/add', function (req, res) {
@@ -16,9 +16,17 @@ router.post('/add', function (req, res) {
         user_id:response.user_id,
         class:response.class,
         amount: response.amount,
-        status: 'waiting'
+        status: 'accept'
     }).then(result =>{
-        res.send(200)
+        user.findOne({
+            where:{
+                id:response.user_id
+            }
+        }).then(user_item =>{
+            pushService.handlePushTokens(result.amount+'의 💵포인트💵가 충전되었습니다!!',
+                user_item.deviceToken, '포인트 충전', 'myPage');
+            res.send(200)
+        })
     }).catch(err =>{
         console.log(err);
         res.send(500)
