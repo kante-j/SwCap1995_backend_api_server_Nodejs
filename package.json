@@ -39,5 +39,8 @@
   },
   "opencv4nodejs": {
     "disableAutoBuild": 1
+  },
+  "devDependencies": {
+    "mocha": "^8.0.1"
   }
 }

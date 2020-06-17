@@ -89,7 +89,7 @@ app.use(function (req, res, next) {
     next(createError(404));
 });
 
-cron.schedule('* */1 * * *', function(){
+cron.schedule('0 * * * *', function(){
     dailyJudgeAfterOneday.authIsDone()
 });
 
