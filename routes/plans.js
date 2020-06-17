@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const pushService = require('../modules/push');
-const {user, plan, watcher, point, daily_authentication, user_image} = require('../models');
+const {user, plan, watcher, point, daily_authentication, daily_judge, user_image} = require('../models');
 const paginate = require('express-paginate');
 const sequelize = require("sequelize");
 const multer = require("multer");
@@ -304,8 +304,8 @@ router.get('/filter_age', async function (req, res) {
     }else if(start_age ==30){
         end_age = 39
     }else if(start_age ==40){
-        end_age = 49
-    }else if(start_age ==50){
+        end_age = 59
+    }else if(start_age ==60){
         end_age = 100
     }
     let user_ids = [];
@@ -730,6 +730,43 @@ router.get('/detail/:plan_id', async function (req, res) {
 
     let plan_id = req.params.plane_id;
 
+
+});
+
+router.get('/watch_achievement/:plan_id', function (req, res) {
+    console.log(new Date());
+    let plan_id = req.params.plan_id;
+    let watcher_ids = [];
+
+    // distrib_method = '선착순', '공평하게 n분의 1' , '추첨'
+    plan.findOne({
+        include:[{
+            model:daily_authentication,
+            include:[{
+                model:daily_judge
+            }]
+        },],
+        where:{
+            id:plan_id
+        }
+    }).then(plan_items =>{
+        watcher.findAndCountAll({
+            where:{
+                plan_id: req.params.plan_id
+            }
+        }).then(watcher_items=>{
+            // 처리히가 쉽도록 배열로 저장
+            watcher_items.rows.map(item => {
+                watcher_ids.push(item.id);
+            })
+
+
+
+        })
+    }).catch(err =>{
+        console.log(err);
+        res.sendStatus(500);
+    })
 
 });
 

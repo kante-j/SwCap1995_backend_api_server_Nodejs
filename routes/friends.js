@@ -150,6 +150,7 @@ router.put('/add', function (req, res) {
                 throw new Error();
             }
             console.log("친구목록에 존재합니다!")
+            res.sendStatus(501);
         }).catch(err => {
             console.log("친구목록 생성 완료")
             friend.create({
