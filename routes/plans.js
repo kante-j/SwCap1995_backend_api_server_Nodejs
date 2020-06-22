@@ -410,6 +410,73 @@ router.get('/filter_category', async function (req, res) {
 /**
  * @swagger
  * paths:
+ *  /plans/filter_detailedCategory:
+ *    get:
+ *      tags:
+ *      - plan
+ *      summary: "get all plan"
+ *      description: "Returns all plan"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - in: path
+ *        name: limit
+ *        type: integer
+ *        required: false
+ *        description: pagination -> limit
+ *      - in: path
+ *        name: page
+ *        type: integer
+ *        required: false
+ *        description: pagination -> page number
+ *      - in: path
+ *        name: age
+ *        type: string
+ *        required: true
+ *        description: pagination -> query
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+router.get('/filter_detailedCategory', async function (req, res) {
+    console.log(new Date());
+
+    let detailedCategory = req.query.detailedCategory;
+
+    let user_ids = [];
+
+    plan.findAndCountAll({
+        include: [{
+            model: user,
+        }],
+        where:{
+            [Op.or]:[{detailedCategory: {
+                    [Op.like]: '%' + detailedCategory + '%'
+                }}]
+        },
+        limit: req.query.limit, offset: req.skip,
+        order: [['updatedAt', 'desc'], ['id', 'desc']]
+    }).then(results =>{
+        const itemCount = results.count;
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        res.send({
+            plans: results.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
+        });
+    }).catch(err =>{
+        res.sendStatus(500);
+    });
+
+});
+
+/**
+ * @swagger
+ * paths:
  *  /plans/{plan_id}:
  *    get:
  *      tags:
@@ -736,20 +803,22 @@ router.get('/detail/:plan_id', async function (req, res) {
 router.get('/watch_achievement/:plan_id', function (req, res) {
     console.log(new Date());
     let plan_id = req.params.plan_id;
-    let watcher_ids = [];
+    let watchers = {};
 
     // distrib_method = '선착순', '공평하게 n분의 1' , '추첨'
     plan.findOne({
         include:[{
             model:daily_authentication,
             include:[{
-                model:daily_judge
-            }]
-        },],
+                model:daily_judge,
+            }],
+            order:[[daily_judge, 'id','desc']],
+        }],
+        order:[[daily_authentication, 'id','desc']],
         where:{
             id:plan_id
         }
-    }).then(plan_items =>{
+    }).then(plan_item =>{
         watcher.findAndCountAll({
             where:{
                 plan_id: req.params.plan_id
@@ -757,10 +826,33 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
         }).then(watcher_items=>{
             // 처리히가 쉽도록 배열로 저장
             watcher_items.rows.map(item => {
-                watcher_ids.push(item.id);
-            })
+                watchers[item.user_id]={count:0,point:0}
+            });
 
+            plan_item.daily_authentications.map(daily_auth_items =>{
+                let check_point_distributed = false;
+                if(daily_auth_items.daily_judges.length !== 0) {
+                    daily_auth_items.daily_judges.map(daily_judge_items => {
+                        let user_id = daily_judge_items.user_id.toString();
+                        console.log(watchers[user_id]);
+                        console.log(watchers);
+                        watchers[daily_judge_items.user_id]['count']++;
 
+                        if(check_point_distributed === false && daily_auth_items.status === 'reject') {
+                            if (plan_item.distrib_method === '선착순') {
+                                watchers[daily_judge_items.user_id]['point'] += plan_item.bet_money * (plan_item.percent/100);
+                                check_point_distributed = true;
+                            } else if (plan_item.distrib_method === '추첨') {
+
+                            } else {
+                                watchers[daily_judge_items.user_id]['point']  += plan_item.bet_money * (plan_item.percent/100) /watcher_items.count ;
+                            }
+                        }
+                    })
+                }
+            });
+
+            res.send(watchers)
 
         })
     }).catch(err =>{

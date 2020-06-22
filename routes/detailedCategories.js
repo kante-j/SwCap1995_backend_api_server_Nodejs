@@ -77,7 +77,6 @@ router.get('/:category_id', function (req, res) {
         where:{
             topCategoryNum:req.params.category_id
         },
-        attributes:['detailedCategory']
     }).then(list =>{
         res.send(list)
     }).catch(err =>{
