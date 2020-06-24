@@ -800,6 +800,12 @@ router.get('/detail/:plan_id', async function (req, res) {
 
 });
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //최댓값은 제외, 최솟값은 포함
+}
+
 router.get('/watch_achievement/:plan_id', function (req, res) {
     console.log(new Date());
     let plan_id = req.params.plan_id;
@@ -826,31 +832,57 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
         }).then(watcher_items=>{
             // 처리히가 쉽도록 배열로 저장
             watcher_items.rows.map(item => {
-                watchers[item.user_id]={count:0,point:0}
+                watchers[item.user_id]={count:0,point_sum:0,point:[]}
             });
 
-            plan_item.daily_authentications.map(daily_auth_items =>{
-                let check_point_distributed = false;
-                if(daily_auth_items.daily_judges.length !== 0) {
-                    daily_auth_items.daily_judges.map(daily_judge_items => {
-                        let user_id = daily_judge_items.user_id.toString();
-                        console.log(watchers[user_id]);
-                        console.log(watchers);
-                        watchers[daily_judge_items.user_id]['count']++;
+            if(plan_item!==null){
+                plan_item.daily_authentications.map(daily_auth_items =>{
+                    let check_point_distributed = false;
+                    if(daily_auth_items.daily_judges.length !== 0) {
+                        daily_auth_items.daily_judges.map(daily_judge_items => {
+                            let user_id = daily_judge_items.user_id.toString();
+                            watchers[daily_judge_items.user_id]['count']++;
 
-                        if(check_point_distributed === false && daily_auth_items.status === 'reject') {
-                            if (plan_item.distrib_method === '선착순') {
-                                watchers[daily_judge_items.user_id]['point'] += plan_item.bet_money * (plan_item.percent/100);
-                                check_point_distributed = true;
-                            } else if (plan_item.distrib_method === '추첨') {
+                            if(check_point_distributed === false && daily_auth_items.status === 'reject') {
+                                if (plan_item.distrib_method === '선착순') {
+                                    const daily_point ={};
+                                    daily_point['date'] = daily_auth_items.updatedAt;
+                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent/100);
 
-                            } else {
-                                watchers[daily_judge_items.user_id]['point']  += plan_item.bet_money * (plan_item.percent/100) /watcher_items.count ;
+                                    watchers[daily_judge_items.user_id]['point'].push(daily_point);
+                                    watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
+                                    check_point_distributed = true;
+                                } else if (plan_item.distrib_method === '추첨') {
+                                    let randNum = daily_auth_items.createdAt.getMinutes()%10;
+                                    const keys = Object.keys(watchers);
+                                    const randIndex = keys.length % randNum-1;
+                                    const randKey = keys[randIndex];
+                                    const name = watchers[randKey];
+
+                                    const daily_point ={};
+                                    daily_point['date'] = daily_auth_items.updatedAt;
+                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent/100);
+
+                                    watchers[daily_judge_items.user_id]['point'].push(daily_point);
+                                    // watchers[randKey]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money * (plan_item.percent/100)])
+                                    watchers[randKey]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
+                                } else {
+
+                                    const daily_point ={};
+                                    daily_point['date'] = daily_auth_items.updatedAt;
+                                    daily_point['point'] = plan_item.bet_money*(plan_item.percent/100) /watcher_items.count;
+
+                                    watchers[daily_judge_items.user_id]['point'].push(daily_point);
+
+                                    // watchers[daily_judge_items.user_id]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money*(plan_item.percent/100) /watcher_items.count ])
+                                    watchers[daily_judge_items.user_id]['point_sum']  += plan_item.bet_money * (plan_item.percent/100) /watcher_items.count ;
+                                }
                             }
-                        }
-                    })
-                }
-            });
+                        })
+                    }
+                });
+            }
+
 
             res.send(watchers)
 
