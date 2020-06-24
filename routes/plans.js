@@ -857,6 +857,7 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
                                     watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
                                     check_point_distributed = true;
                                 } else if (plan_item.distrib_method === '추첨') {
+
                                     let randNum = daily_auth_items.createdAt.getMinutes()%10;
                                     const keys = Object.keys(watchers);
                                     const randIndex = keys.length % randNum-1;
@@ -867,7 +868,7 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
                                     daily_point['date'] = daily_auth_items.updatedAt;
                                     daily_point['point'] = plan_item.bet_money * (plan_item.percent/100);
 
-                                    watchers[daily_judge_items.user_id]['point'].push(daily_point);
+                                    watchers[randKey]['point'].push(daily_point);
                                     // watchers[randKey]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money * (plan_item.percent/100)])
                                     watchers[randKey]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
                                 } else {
