@@ -16,9 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING
     },
-    image_url: {
-      type: DataTypes.STRING
-    },
     result: {
       type: DataTypes.STRING
     },
