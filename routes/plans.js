@@ -858,11 +858,12 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
                                     check_point_distributed = true;
                                 } else if (plan_item.distrib_method === '추첨') {
 
-                                    let randNum = daily_auth_items.createdAt.getMinutes()%10;
-                                    const keys = Object.keys(watchers);
-                                    const randIndex = keys.length % randNum-1;
-                                    const randKey = keys[randIndex];
-                                    const name = watchers[randKey];
+                                    let randNum = daily_judge_items.createdAt.getMinutes();
+                                    let keys = Object.keys(watchers);
+                                    let randIndex = (randNum-1) % keys.length;
+                                    let randKey = keys[randIndex];
+                                    let name = watchers[randKey];
+
 
                                     const daily_point ={};
                                     daily_point['date'] = daily_auth_items.updatedAt;
