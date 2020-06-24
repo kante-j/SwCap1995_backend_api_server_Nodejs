@@ -35,10 +35,32 @@ const uploadImage = multer({
     })
 });
 
-router.post('/face_detection', function (req, res) {
-    console.log(new Date());
-    res.sendStatus(200);
-});
+/**
+ * @swagger
+ * definitions:
+ *  daily_authentication:
+ *   type: object
+ *   properties:
+ *     id:
+ *       type: integer
+ *       description: agreement id
+ *     user_id:
+ *       type: string
+ *       description: 유저 id
+ *     plan_id:
+ *       type: string
+ *       description: plan id
+ *     comment:
+ *       type: string
+ *       description: 일일 인증 코멘트
+ *     status:
+ *       type: string
+ *       description: daily auth status
+ *     image_url:
+ *       type: string
+ *       description: image url
+ */
+
 
 router.get('/:plan_id',function (req, res) {
     console.log(new Date());
@@ -52,6 +74,11 @@ router.get('/:plan_id',function (req, res) {
         },
         order: [['id', 'desc']]
     }).then((daily_auth) => {
+        let reject_count = 0;
+        daily_auth.rows.map(daily_auth_item =>{
+            if(daily_auth_item.status === 'reject') reject_count++;
+        });
+        daily_auth['reject_count'] = reject_count;
         daily_auth['count'] = daily_auth.rows.length;
         res.send(daily_auth);
     }).catch(err => {
