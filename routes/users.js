@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 // var request = require('request');
 const crypto = require('crypto');
-const {user, friend, point, user_image} = require('../models');
+const {user, friend, point, user_image, daily_authentication} = require('../models');
 const secretKey = require('../secretKey');
 var bodyParser = require('body-parser');
 var sequelize = require('../models').sequelize;
@@ -400,6 +400,58 @@ router.post('/emailcheck', function (req, res) {
 });
 
 
+/**
+ * @swagger
+ * paths:
+ *  /users/auth_record/{user_id}:
+ *    get:
+ *      tags:
+ *      - user
+ *      summary: "해당 유저의 인증 기록"
+ *      description: "인증 기록"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
+// 포인트
+router.get('/auth_record/:user_id', function (req, res) {
+    console.log(new Date());
+    let user_id = req.params.user_id;
+    daily_authentication.findAndCountAll({
+        where:{
+            user_id: user_id,
+            status: 'done'
+        },
+    }).then(daily_auth_items =>{
+        const temp_json ={};
+        daily_auth_items.rows.map(item =>{
+            let date = item.createdAt.toISOString().split('T')[0];
+            if(temp_json[date] === undefined){
+                temp_json[date] = 1;
+            }else{
+                temp_json[date] += 1;
+            }
+        });
+        res.send(temp_json);
+    })
+
+});
 
 /**
  * @swagger
@@ -682,6 +734,7 @@ router.get('/me/points/:user_id', function (req, res) {
         res.sendStatus(500);
     })
 });
+
 
 
 module.exports = router;

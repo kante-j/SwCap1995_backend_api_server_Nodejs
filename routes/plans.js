@@ -573,6 +573,10 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
     console.log(response);
     let watchersList = response.spectors.split(',');
 
+    if(response.is_custom === false){
+        response.status = 'waiting';
+    }
+
     plan.create({
         user_id: response.user_id,
         title: response.title,
