@@ -157,7 +157,35 @@ router.post('/is_nickname', function (req, res) {
 
 
 
-
+/**
+ * @swagger
+ * paths:
+ *  /users/is_face_detection/{user_id}:
+ *    get:
+ *      tags:
+ *      - user
+ *      summary: "해당 유저의 is_face_detection 컬럼 1로 변경"
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/is_face_detection/:user_id', function (req, res) {
     console.log(new Date());
 
@@ -272,6 +300,37 @@ router.post('/face_detection', uploadImage.single('photo'), (req, res)=> {
     });
 });
 
+
+
+/**
+ * @swagger
+ * paths:
+ *  /users/is_user:
+ *    post:
+ *      tags:
+ *      - user
+ *      summary: "check is user using email"
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: email
+ *          in: body
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -email
+ *            properties:
+ *              email:
+ *                type: string
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 // 유저이메일로 유저 테이블에 유저가 있는 지 없는지 확인
 router.post('/is_user', function (req, res) {
     console.log(new Date());
@@ -294,6 +353,36 @@ router.post('/is_user', function (req, res) {
         })
 });
 
+
+/**
+ * @swagger
+ * paths:
+ *  /users/emailcheck:
+ *    post:
+ *      tags:
+ *      - user
+ *      summary: "is email login "
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: email
+ *          in: body
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -email
+ *            properties:
+ *              email:
+ *                type: string
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.post('/emailcheck', function (req, res) {
     console.log(new Date());
     var email = req.body.email;
@@ -310,12 +399,39 @@ router.post('/emailcheck', function (req, res) {
         })
 });
 
+
+
+/**
+ * @swagger
+ * paths:
+ *  /users:
+ *    post:
+ *      tags:
+ *      - user
+ *      summary: "user 회원가입"
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *       - name: "body"
+ *         in: "body"
+ *         required: true
+ *         schema:
+ *           $ref: "#/definitions/user"
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.post('/', function (req, res) {
     console.log(new Date());
     let salt = Math.round((new Date().valueOf()) * Math.random()) + "";
 
     let response = {
         email: req.body.email,
+        interest_category: req.body.interest_category,
         // password: crypto.createHash("sha256").update(req.body.password + salt).digest("hex"),
         // password: encrypt(req.body.password),
         sex: req.body.sex,
@@ -344,6 +460,7 @@ router.post('/', function (req, res) {
                     // password: response.password,
                     sex: response.sex,
                     age: response.age,
+                    interest_category: response.interest_category,
                     deviceToken: response.deviceToken,
                     createdAt: response.created_at,
                     nickname: response.nickname,
@@ -362,6 +479,7 @@ router.post('/', function (req, res) {
                 age: response.age,
                 nickname: response.nickname,
                 deviceToken: response.deviceToken,
+                interest_category: response.interest_category,
                 createdAt: response.created_at,
                 is_face_detection: response.is_face_detection,
                 weight: response.weight,
@@ -381,6 +499,7 @@ router.post('/', function (req, res) {
             sex: response.sex,
             age: response.age,
             deviceToken: response.deviceToken,
+            interest_category: response.interest_category,
             createdAt: response.created_at,
             nickname: response.nickname,
             is_face_detection: response.is_face_detection,
@@ -396,6 +515,35 @@ router.post('/', function (req, res) {
 
 //myPage
 
+/**
+ * @swagger
+ * paths:
+ *  /users/me/{user_id}:
+ *    get:
+ *      tags:
+ *      - user
+ *      summary: "내 정보"
+ *      description: "Returns a my point"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/me/:user_id', function (req, res) {
     console.log(new Date());
     var response = {};
@@ -466,6 +614,35 @@ router.get('/me/:user_id', function (req, res) {
 });
 
 
+/**
+ * @swagger
+ * paths:
+ *  /users/me/points/{user_id}:
+ *    get:
+ *      tags:
+ *      - user
+ *      summary: "해당 유저의 points"
+ *      description: "Returns a my point"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 // 포인트
 router.get('/me/points/:user_id', function (req, res) {
     console.log(new Date());

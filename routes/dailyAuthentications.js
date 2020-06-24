@@ -62,6 +62,35 @@ const uploadImage = multer({
  */
 
 
+/**
+ * @swagger
+ * paths:
+ *  /daily_authentications/{plan_id}:
+ *    get:
+ *      tags:
+ *      - customer_message
+ *      summary: "customer_message search by user id"
+ *      description: "Returns a my customer_message"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: plan_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -plan_id
+ *            properties:
+ *              plan_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/:plan_id',function (req, res) {
     console.log(new Date());
 
@@ -87,6 +116,30 @@ router.get('/:plan_id',function (req, res) {
     });
 });
 
+/**
+ * @swagger
+ * paths:
+ *  /daily_authentications:
+ *    post:
+ *      tags:
+ *      - daily_authentication
+ *      summary: "daily_authentication create"
+ *      description: "Returns a status"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *      - name: "body"
+ *        in: "body"
+ *        required: true
+ *        schema:
+ *          $ref: "#/definitions/daily_authentication"
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.post('/',uploadImage.single('photo'),function (req, res) {
     console.log(new Date());
     let response = {

@@ -50,6 +50,35 @@ router.get('/', function (req, res) {
 
 
 
+/**
+ * @swagger
+ * paths:
+ *  /friends/{user_id}:
+ *    get:
+ *      tags:
+ *      - friend
+ *      summary: "friends search by user id"
+ *      description: "Returns a my friends"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/:user_id', function (req, res) {
     console.log(new Date());
 
@@ -73,6 +102,36 @@ router.get('/:user_id', function (req, res) {
 });
 
 
+
+/**
+ * @swagger
+ * paths:
+ *  /waiting/{user_id}:
+ *    get:
+ *      tags:
+ *      - friend
+ *      summary: "waiting friends by user id"
+ *      description: "Returns a my waiting friends"
+ *      produces:
+ *      - applicaion/json
+ *      parameters:
+ *        - name: user_id
+ *          in: path
+ *          required: true
+ *          schema:
+ *            type: object
+ *            required:
+ *              -user_id
+ *            properties:
+ *              user_id:
+ *                type: integer
+ *
+ *      responses:
+ *       200:
+ *        description: category of column list
+ *        schema:
+ *          type: string
+ */
 router.get('/waiting/:user_id', function (req, res) {
     console.log(new Date());
 
@@ -126,6 +185,40 @@ var isEmpty = function (value) {
     }
 };
 
+/**
+ * @swagger
+ * paths:
+ *  /friends/add:
+ *    put:
+ *      tags:
+ *      - friend
+ *      summary: "friend create"
+ *      description: "friend 생성"
+ *      consumes:
+ *      - "application/json"
+ *      - "application/xml"
+ *      - x-www-form-urlencoded
+ *      parameters:
+ *      - in: body
+ *        name: friend
+ *        schema:
+ *          type: object
+ *          required:
+ *            - user_id
+ *            - target_nickname
+ *          properties:
+ *            user_id:
+ *              type: integer
+ *            target_nickname:
+ *              type: string
+ *      produces:
+ *      - application/json
+ *      responses:
+ *       200:
+ *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ */
 router.put('/add', function (req, res) {
     console.log(new Date());
     let response = {
@@ -178,6 +271,43 @@ router.put('/add', function (req, res) {
 });
 
 
+/**
+ * @swagger
+ * paths:
+ *  /friends/response:
+ *    patch:
+ *      tags:
+ *      - friend
+ *      summary: "friend create"
+ *      description: "friend 생성"
+ *      consumes:
+ *      - "application/json"
+ *      - "application/xml"
+ *      - x-www-form-urlencoded
+ *      parameters:
+ *      - in: body
+ *        name: friend
+ *        schema:
+ *          type: object
+ *          required:
+ *            - user_id
+ *            - target_nickname
+ *            - is_accept
+ *          properties:
+ *            user_id:
+ *              type: integer
+ *            target_nickname:
+ *              type: string
+ *            is_accept:
+ *              type: string
+ *      produces:
+ *      - application/json
+ *      responses:
+ *       200:
+ *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ */
 router.patch('/response', function (req, res) {
     console.log(new Date());
     let response = {

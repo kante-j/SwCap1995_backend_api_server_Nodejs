@@ -19,10 +19,10 @@ const pushService = require('../modules/push');
  *       type: string
  *       description: plan id
  *     rule_1_point:
- *       type: integer
+ *       type: double
  *       description: 합의 규칙 점수 1번
  *     rule_2_point:
- *       type: integer
+ *       type: double
  *       description: 합의 규칙 점수 2번
  *     rule_3_point:
  *       type: boolean
@@ -43,15 +43,27 @@ const pushService = require('../modules/push');
  *      - "application/xml"
  *      - x-www-form-urlencoded
  *      parameters:
- *      - name: user_id
- *        in: body
- *        required: true
- *        type: integer
+ *      - in: body
+ *        name: agreement
+ *        schema:
+ *          type: object
+ *          required:
+ *            - user_id
+ *            - plan_id
+ *          properties:
+ *            user_id:
+ *              type: integer
+ *            plan_id:
+ *              type: integer
  *      produces:
  *      - application/json
  *      responses:
  *       200:
  *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ *       500:
+ *        description: is not exist
  *        schema:
  *          type: status code
  */
@@ -78,6 +90,48 @@ router.post('/is_exist', function (req, res) {
     })
 });
 
+
+
+/**
+ * @swagger
+ * paths:
+ *  /agreements:
+ *    post:
+ *      tags:
+ *      - agreement
+ *      summary: "agreement create"
+ *      description: "agreement aboud custom plan"
+ *      consumes:
+ *      - "application/json"
+ *      - "application/xml"
+ *      - x-www-form-urlencoded
+ *      parameters:
+ *      - in: body
+ *        name: agreement
+ *        schema:
+ *          type: object
+ *          required:
+ *            - user_id
+ *            - plan_id
+ *            - rule_1_point
+ *            - rule_2_point
+ *          properties:
+ *            user_id:
+ *              type: integer
+ *            plan_id:
+ *              type: integer
+ *            rule_1_point:
+ *              type: double
+ *            rule_2_point:
+ *              type: double
+ *      produces:
+ *      - application/json
+ *      responses:
+ *       200:
+ *        description: is nickname in user table
+ *        schema:
+ *          type: status code
+ */
 router.post('/', function (req, res) {
     console.log(new Date());
     let response = {
