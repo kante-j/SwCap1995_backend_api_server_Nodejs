@@ -31,7 +31,7 @@ module.exports = {
             },
             interest_category: {
               allowNull: true,
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING(256),
             },
             weight: {
               allowNull: true,

@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         interest_category: {
             allowNull: true,
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
         },
         nickname:{
             type: DataTypes.STRING(30),
