@@ -573,7 +573,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         plan_start_day: req.body.plan_start_day,
         bet_money: req.body.bet_money,
         is_custom: req.body.is_custom,
-        status: 'start',
+        status: 'waiting',
         is_public: req.body.is_public,
         spectors: req.body.spectors,
     };
@@ -581,8 +581,8 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
     console.log(response);
     let watchersList = response.spectors.split(',');
 
-    if (response.is_custom === 1) {
-        response.status = 'waiting';
+    if (response.is_custom === '0') {
+        response.status = 'start';
     }
 
     plan.create({
