@@ -300,15 +300,15 @@ router.get('/filter_age', async function (req, res) {
     let start_age = age;
     let end_age;
 
-    if(start_age == 10){
+    if (start_age == 10) {
         end_age = 19
-    }else if(start_age ==20){
+    } else if (start_age == 20) {
         end_age = 29
-    }else if(start_age ==30){
+    } else if (start_age == 30) {
         end_age = 39
-    }else if(start_age ==40){
+    } else if (start_age == 40) {
         end_age = 59
-    }else if(start_age ==60){
+    } else if (start_age == 60) {
         end_age = 100
     }
     let user_ids = [];
@@ -316,7 +316,7 @@ router.get('/filter_age', async function (req, res) {
     plan.findAndCountAll({
         include: [{
             model: user,
-            where:{
+            where: {
                 [Op.or]: [{
                     age: {
                         [Op.between]: [start_age, end_age]
@@ -326,16 +326,16 @@ router.get('/filter_age', async function (req, res) {
         }],
         limit: req.query.limit, offset: req.skip,
         order: [['updatedAt', 'desc'], ['id', 'desc']]
-    }).then(results =>{
+    }).then(results => {
         const itemCount = results.count;
-                    const pageCount = Math.ceil(results.count / req.query.limit);
-                    res.send({
-                        plans: results.rows,
-                        pageCount,
-                        itemCount,
-                        pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
-                    });
-    }).catch(err =>{
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        res.send({
+            plans: results.rows,
+            pageCount,
+            itemCount,
+            pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
+        });
+    }).catch(err => {
         res.sendStatus(500);
     });
 
@@ -387,14 +387,16 @@ router.get('/filter_category', async function (req, res) {
         include: [{
             model: user,
         }],
-        where:{
-            [Op.or]:[{category: {
+        where: {
+            [Op.or]: [{
+                category: {
                     [Op.like]: '%' + category + '%'
-                }}]
+                }
+            }]
         },
         limit: req.query.limit, offset: req.skip,
         order: [['updatedAt', 'desc'], ['id', 'desc']]
-    }).then(results =>{
+    }).then(results => {
         const itemCount = results.count;
         const pageCount = Math.ceil(results.count / req.query.limit);
         res.send({
@@ -403,7 +405,7 @@ router.get('/filter_category', async function (req, res) {
             itemCount,
             pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
         });
-    }).catch(err =>{
+    }).catch(err => {
         res.sendStatus(500);
     });
 
@@ -455,14 +457,16 @@ router.get('/filter_detailedCategory', async function (req, res) {
         include: [{
             model: user,
         }],
-        where:{
-            [Op.or]:[{detailedCategory: {
+        where: {
+            [Op.or]: [{
+                detailedCategory: {
                     [Op.like]: '%' + detailedCategory + '%'
-                }}]
+                }
+            }]
         },
         limit: req.query.limit, offset: req.skip,
         order: [['updatedAt', 'desc'], ['id', 'desc']]
-    }).then(results =>{
+    }).then(results => {
         const itemCount = results.count;
         const pageCount = Math.ceil(results.count / req.query.limit);
         res.send({
@@ -471,7 +475,7 @@ router.get('/filter_detailedCategory', async function (req, res) {
             itemCount,
             pages: paginate.getArrayPages(req)(pageCount, pageCount, req.query.page)
         });
-    }).catch(err =>{
+    }).catch(err => {
         res.sendStatus(500);
     });
 
@@ -558,7 +562,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         custom_picture_rule_1: req.body.custom_picture_rule_1,
         custom_picture_rule_2: req.body.custom_picture_rule_2,
         custom_picture_rule_3: req.body.custom_picture_rule_3,
-        description:req.body.description,
+        description: req.body.description,
         authentication_way: req.body.authentication_way,
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
@@ -577,8 +581,8 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
     console.log(response);
     let watchersList = response.spectors.split(',');
 
-    if(response.is_custom === false){
-        response.status = 'waiting';
+    if (response.is_custom === false) {
+        response.status = 'start';
     }
 
     plan.create({
@@ -596,33 +600,34 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         custom_picture_rule_1: response.custom_picture_rule_1,
         custom_picture_rule_2: response.custom_picture_rule_2,
         custom_picture_rule_3: response.custom_picture_rule_3,
-        description:response.description,
+        description: response.description,
         plan_period: response.plan_period,
         picture_time: response.picture_time,
         createdAt: Date.now(),
         is_custom: response.is_custom,
         plan_start_day: response.plan_start_day,
         bet_money: response.bet_money,
-        status: 'waiting',
+        status: response.status,
         is_public: response.is_public,
     }).then((temp_plan) => {
+            point.create({
+                user_id: response.user_id,
+                class: 'challenge',
+                amount: response.bet_money * (-1),
+                status: 'accept'
+            });
             user.findAndCountAll({
                 where: {
                     nickname: watchersList
                 }
             }).then((watch_users) => {
                 watch_users.rows.map((user) => {
-                    point.create({
-                        user_id: 1,
-                        class: 'challenge',
-                        amount: 3000,
-                        status: 'waiting'
-                    });
                     watcher.create({
                         user_id: user.dataValues.id,
                         plan_id: temp_plan.id,
                         createdAt: Date.now(),
                     }).then(() => {
+
                         pushService.handlePushTokens(temp_plan.title + '의 감시가 시작되었습니다!',
                             user.dataValues.deviceToken);
                     }).catch(err => {
@@ -682,11 +687,11 @@ router.get('/all/:user_id', function (req, res) {
         include: [
             {
                 model: user,
-                include:[{
+                include: [{
                     model: user_image
                 }]
-            },{
-            model:daily_authentication
+            }, {
+                model: daily_authentication
             }],
         where: {
             user_id: req.params.user_id
@@ -716,7 +721,7 @@ router.get('/all/:user_id', function (req, res) {
                     plans.rows[i].dataValues['today_auth'] = false
                 }
             }
-            plans['count']=plans.rows.length
+            plans['count'] = plans.rows.length
 
             res.send(plans);
         }).catch(err => {
@@ -771,7 +776,7 @@ router.get('/watchingAll/:user_id', function (req, res) {
         plan.findAndCountAll({
             include: [{
                 model: user
-            },{
+            }, {
                 model: daily_authentication
             }],
             where: {
@@ -800,7 +805,6 @@ router.get('/watchingAll/:user_id', function (req, res) {
 });
 
 
-
 router.get('/detail/:plan_id', async function (req, res) {
     console.log(new Date());
 
@@ -822,71 +826,71 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
 
     // distrib_method = '선착순', '공평하게 n분의 1' , '추첨'
     plan.findOne({
-        include:[{
-            model:daily_authentication,
-            include:[{
-                model:daily_judge,
+        include: [{
+            model: daily_authentication,
+            include: [{
+                model: daily_judge,
             }],
-            order:[[daily_judge, 'id','desc']],
+            order: [[daily_judge, 'id', 'desc']],
         }],
-        order:[[daily_authentication, 'id','desc']],
-        where:{
-            id:plan_id
+        order: [[daily_authentication, 'id', 'desc']],
+        where: {
+            id: plan_id
         }
-    }).then(plan_item =>{
+    }).then(plan_item => {
         watcher.findAndCountAll({
-            where:{
+            where: {
                 plan_id: req.params.plan_id
             }
-        }).then(watcher_items=>{
+        }).then(watcher_items => {
             // 처리히가 쉽도록 배열로 저장
             watcher_items.rows.map(item => {
-                watchers[item.user_id]={count:0,point_sum:0,point:[]}
+                watchers[item.user_id] = {count: 0, point_sum: 0, point: []}
             });
 
-            if(plan_item!==null){
-                plan_item.daily_authentications.map(daily_auth_items =>{
+            if (plan_item !== null) {
+                plan_item.daily_authentications.map(daily_auth_items => {
                     let check_point_distributed = false;
-                    if(daily_auth_items.daily_judges.length !== 0) {
+                    if (daily_auth_items.daily_judges.length !== 0) {
                         daily_auth_items.daily_judges.map(daily_judge_items => {
                             let user_id = daily_judge_items.user_id.toString();
                             watchers[daily_judge_items.user_id]['count']++;
 
-                            if(check_point_distributed === false && daily_auth_items.status === 'reject') {
+                            if (check_point_distributed === false && daily_auth_items.status === 'reject') {
                                 if (plan_item.distrib_method === '선착순') {
-                                    const daily_point ={};
+                                    const daily_point = {};
                                     daily_point['date'] = daily_auth_items.updatedAt;
-                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent/100);
+                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100);
 
                                     watchers[daily_judge_items.user_id]['point'].push(daily_point);
-                                    watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
+                                    watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent / 100);
                                     check_point_distributed = true;
                                 } else if (plan_item.distrib_method === '추첨') {
 
                                     let randNum = daily_judge_items.createdAt.getMinutes();
                                     let keys = Object.keys(watchers);
-                                    let randIndex = (randNum-1) % keys.length;
+                                    let randIndex = (randNum - 1) % keys.length;
                                     let randKey = keys[randIndex];
                                     let name = watchers[randKey];
 
 
-                                    const daily_point ={};
+                                    const daily_point = {};
                                     daily_point['date'] = daily_auth_items.updatedAt;
-                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent/100);
+                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100);
 
                                     watchers[randKey]['point'].push(daily_point);
                                     // watchers[randKey]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money * (plan_item.percent/100)])
-                                    watchers[randKey]['point_sum'] += plan_item.bet_money * (plan_item.percent/100);
+                                    watchers[randKey]['point_sum'] += plan_item.bet_money * (plan_item.percent / 100);
                                 } else {
 
-                                    const daily_point ={};
+                                    const daily_point = {};
                                     daily_point['date'] = daily_auth_items.updatedAt;
-                                    daily_point['point'] = plan_item.bet_money*(plan_item.percent/100) /watcher_items.count;
+                                    daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100) / watcher_items.count;
 
                                     watchers[daily_judge_items.user_id]['point'].push(daily_point);
 
                                     // watchers[daily_judge_items.user_id]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money*(plan_item.percent/100) /watcher_items.count ])
-                                    watchers[daily_judge_items.user_id]['point_sum']  += plan_item.bet_money * (plan_item.percent/100) /watcher_items.count ;
+                                    watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent / 100) / watcher_items.count;
                                 }
                             }
                         })
@@ -898,7 +902,7 @@ router.get('/watch_achievement/:plan_id', function (req, res) {
             res.send(watchers)
 
         })
-    }).catch(err =>{
+    }).catch(err => {
         console.log(err);
         res.sendStatus(500);
     })
