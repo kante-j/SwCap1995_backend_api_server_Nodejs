@@ -26,7 +26,6 @@ const testRouter = require('./routes/test');
 const pushTestRouter = require('./routes/push_test');
 const {GraphQLSchema} = require('graphql');
 const bodyParser = require('body-parser');
-const swaggerDoc = require('./routes/swaggerDoc');
 const swaggerOption = require('./routes/swagger');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerSpec = swaggerJSDoc(swaggerOption);
