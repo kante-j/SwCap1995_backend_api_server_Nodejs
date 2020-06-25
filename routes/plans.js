@@ -75,6 +75,9 @@ const Op = sequelize.Op;
  *     custom_picture_rule_3:
  *       type: string
  *       description: 플랜 custom_picture_rule_3
+ *     description:
+ *       type: string
+ *       description: 플랜 description
  *     picture_time:
  *       type: string
  *       description: 플랜 picture_time
@@ -555,6 +558,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         custom_picture_rule_1: req.body.custom_picture_rule_1,
         custom_picture_rule_2: req.body.custom_picture_rule_2,
         custom_picture_rule_3: req.body.custom_picture_rule_3,
+        description:req.body.description,
         authentication_way: req.body.authentication_way,
         plan_period: req.body.plan_period,
         picture_time: req.body.picture_time,
@@ -592,6 +596,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
         custom_picture_rule_1: response.custom_picture_rule_1,
         custom_picture_rule_2: response.custom_picture_rule_2,
         custom_picture_rule_3: response.custom_picture_rule_3,
+        description:response.description,
         plan_period: response.plan_period,
         picture_time: response.picture_time,
         createdAt: Date.now(),

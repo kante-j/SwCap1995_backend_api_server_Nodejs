@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
         custom_picture_rule_3: {
             type: DataTypes.STRING
         },
+        description:{
+            type: DataTypes.STRING
+        },
         picture_time: {
             type: DataTypes.INTEGER
         },
