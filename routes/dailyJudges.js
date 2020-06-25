@@ -180,7 +180,19 @@ router.post('/', function (req, res) {
                     }).then(daily_judge_items =>{
                         let daily_judge_count = daily_judge_items.count;
                         if(watcher_count === daily_judge_count){
-                            daily_auth.update({status:'done'});
+                            let correct_count = 0;
+                            daily_judge_items.rows.map(item =>{
+                                if(item.is_correct === '0'){
+
+                                }else{
+                                    correct_count++;
+                                }
+                            });
+                            if(correct_count*2 > watcher_count) {
+                                daily_auth.update({status:'done'});
+                            }else{
+                                daily_auth.update({status:'reject'});
+                            }
                         }
 
                         res.sendStatus(200);
