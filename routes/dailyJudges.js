@@ -182,8 +182,7 @@ router.post('/', function (req, res) {
                         if(watcher_count === daily_judge_count){
                             let correct_count = 0;
                             daily_judge_items.rows.map(item =>{
-                                if(item.is_correct === '0'){
-
+                                if(item.is_correct === 0 || item.is_correct === false){
                                 }else{
                                     correct_count++;
                                 }
