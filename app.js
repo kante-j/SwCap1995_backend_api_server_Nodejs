@@ -32,6 +32,8 @@ const swaggerSpec = swaggerJSDoc(swaggerOption);
 const swaggerUi = require('swagger-ui-express');
 const paginate = require('express-paginate');
 const dailyJudgeAfterOneday = require('./cron_jobs/dailyJudgeAfterOneday.js');
+const planEndAfterEndDate = require('./cron_jobs/planEndAfterEndDate.js');
+const planEndOutofPoint = require('./cron_jobs/planEndOutofPoint.js');
 var options = {
     exclude: ["users"]
 };
@@ -92,6 +94,12 @@ app.use(function (req, res, next) {
 
 cron.schedule('0 * * * *', function(){
     dailyJudgeAfterOneday.authIsDone()
+});
+cron.schedule('10 * * * *', function(){
+    planEndAfterEndDate.planEndAfterEndDate()
+});
+cron.schedule('20 * * * *', function(){
+    planEndOutofPoint.planEndOutofPoint()
 });
 
 // error handler
