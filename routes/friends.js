@@ -339,7 +339,7 @@ router.patch('/response', function (req, res) {
                 });
 
                 user.findOne({where: {id: response.user_id}}).then((user) => {
-                    pushService.handlePushTokens(user.nickname + '님과 친구가 되었습니다!',
+                    pushService.handlePushTokens(user.nickname + '님과 친구가 되었습니다!🙋🏻‍♂️',
                         target_user.deviceToken, '친구 수락', 'friend');
                 }).then(() => {
                     res.send(200)

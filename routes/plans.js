@@ -627,8 +627,7 @@ router.post('/', uploadImage.single('photo'), function (req, res) {
                         plan_id: temp_plan.id,
                         createdAt: Date.now(),
                     }).then(() => {
-
-                        pushService.handlePushTokens(temp_plan.title + '의 감시가 시작되었습니다!',
+                        pushService.handlePushTokens("플랜 <"+temp_plan.title + '> 의 감시가 시작되었습니다!🔍',
                             user.dataValues.deviceToken);
                     }).catch(err => {
                         console.log(err);

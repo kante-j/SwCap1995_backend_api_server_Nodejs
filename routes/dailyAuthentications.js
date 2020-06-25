@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const pushService = require('../modules/push');
 const {user, plan, watcher, point, agreement, daily_judge, daily_authentication} = require('../models');
 
 const multer = require("multer");
@@ -16,7 +17,7 @@ const s3 = new AWS.S3({
     endpoint: endpoint,
     region: region,
     credentials: {
-        accessKeyId : access_key,
+        accessKeyId: access_key,
         secretAccessKey: secret_key
     },
 });
@@ -91,21 +92,21 @@ const uploadImage = multer({
  *        schema:
  *          type: string
  */
-router.get('/:plan_id',function (req, res) {
+router.get('/:plan_id', function (req, res) {
     console.log(new Date());
 
     daily_authentication.findAndCountAll({
         include: [{
             model: daily_judge
         }],
-        where:{
-           plan_id: req.params.plan_id
+        where: {
+            plan_id: req.params.plan_id
         },
         order: [['id', 'desc']]
     }).then((daily_auth) => {
         let reject_count = 0;
-        daily_auth.rows.map(daily_auth_item =>{
-            if(daily_auth_item.status === 'reject') reject_count++;
+        daily_auth.rows.map(daily_auth_item => {
+            if (daily_auth_item.status === 'reject') reject_count++;
         });
         daily_auth['reject_count'] = reject_count;
         daily_auth['count'] = daily_auth.rows.length;
@@ -140,13 +141,13 @@ router.get('/:plan_id',function (req, res) {
  *        schema:
  *          type: string
  */
-router.post('/',uploadImage.single('photo'),function (req, res) {
+router.post('/', uploadImage.single('photo'), function (req, res) {
     console.log(new Date());
     let response = {
         user_id: req.body.user_id,
         plan_id: req.body.plan_id,
         status: req.body.status,
-        image_url: 'https://kr.object.ncloudstorage.com/swcap1995/dailyAuthentications/'+req.file.key,
+        image_url: 'https://kr.object.ncloudstorage.com/swcap1995/dailyAuthentications/' + req.file.key,
         comment: req.body.comment,
     };
 
@@ -157,9 +158,38 @@ router.post('/',uploadImage.single('photo'),function (req, res) {
         status: response.status,
         image_url: response.image_url,
         comment: response.comment,
-    }).then((daily_auth) =>{
-        res.sendStatus(200);
-    }).catch(err =>{
+    }).then((daily_auth) => {
+        plan.findOne({
+            where:{
+                id:response.plan_id
+            }
+        }).then(plan_item =>{
+            watcher.findAndCountAll({
+                where: {
+                    plan_id: 178
+                },
+                attributes:['user_id']
+            }).then(watchers => {
+                let watcher_list = [];
+                watchers.rows.map(watcher =>{
+                    watcher_list.push(watcher.user_id);
+                });
+                user.findAndCountAll({
+                    where: {
+                        id: watcher_list
+                    },
+                    attributes: ['deviceToken', 'nickname']
+                }).then(user_items =>{
+                    user_items.rows.map(user_item =>{
+                        pushService.handlePushTokens(plan_item.title + "플랜의 인증이 지금 막 되었어요!🙏 \n감시를 해주세요!🔍",
+                            user_item.deviceToken);
+                    })
+                })
+            });
+            res.sendStatus(200);
+        })
+
+    }).catch(err => {
         console.log(err);
         res.sendStatus(500);
     })

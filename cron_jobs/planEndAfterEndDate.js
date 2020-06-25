@@ -34,7 +34,7 @@ exports.planEndAfterEndDate = function (path) {
             if(date <today){
                 pushService.handlePushTokens("<"+plan_item.title+ '> 플랜이 목표달성기간을 지나 플랜이 종료되었어요!😁' +
                     '결과를 확인해보세요!✅',
-                    plan_item.user.deviceToken, '플랜 종료', 'home');
+                    plan_item.user.deviceToken, '플랜 종료', 'plan_detail');
                 plan_item.update({status: 'end'})
             }
         })
