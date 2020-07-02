@@ -7,6 +7,7 @@ var server = require("../app.js");
 
 
 describe("플랜 정보 불러오기 테스트 ->", function () {
+
     var svr = "http://localhost:3000";
 
     describe("플랜 정보 불러오기 ->", function () {
@@ -30,9 +31,6 @@ describe("플랜 정보 불러오기 테스트 ->", function () {
                 });
         });
 
-        after(function () {
-            // server.close();
-        });
     });
 
     describe("감시중인 플랜 모두 불러오기 ->", function () {
@@ -63,9 +61,6 @@ describe("플랜 정보 불러오기 테스트 ->", function () {
                 });
         });
 
-        after(function () {
-            // server.close();
-        });
     })
 
 
@@ -96,8 +91,5 @@ describe("플랜 정보 불러오기 테스트 ->", function () {
                 });
         });
 
-        after(function () {
-            server.close();
-        });
     })
 });
