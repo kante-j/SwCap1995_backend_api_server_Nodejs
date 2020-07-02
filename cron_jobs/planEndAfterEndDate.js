@@ -59,7 +59,7 @@ exports.planEndAfterEndDate = function (path) {
                                         if (plan_item.distrib_method === '선착순') {
                                             const daily_point = {};
                                             daily_point['date'] = daily_auth_items.updatedAt;
-                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100);
+                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100) * weight;
 
                                             watchers[daily_judge_items.user_id]['point'].push(daily_point);
                                             watchers[daily_judge_items.user_id]['point_sum'] += plan_item.bet_money * (plan_item.percent / 100);
@@ -75,7 +75,7 @@ exports.planEndAfterEndDate = function (path) {
 
                                             const daily_point = {};
                                             daily_point['date'] = daily_auth_items.updatedAt;
-                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100);
+                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100) * weight;
 
                                             watchers[randKey]['point'].push(daily_point);
                                             // watchers[randKey]['point'].push([daily_auth_items.updatedAt,plan_item.bet_money * (plan_item.percent/100)])
@@ -84,7 +84,7 @@ exports.planEndAfterEndDate = function (path) {
 
                                             const daily_point = {};
                                             daily_point['date'] = daily_auth_items.updatedAt;
-                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100) / watcher_items.count;
+                                            daily_point['point'] = plan_item.bet_money * (plan_item.percent / 100) / watcher_items.count * weight;
 
                                             watchers[daily_judge_items.user_id]['point'].push(daily_point);
 

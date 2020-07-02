@@ -1,6 +1,6 @@
 'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const point = sequelize.define('point', {
+  module.exports = (sequelize, DataTypes) => {
+    const point = sequelize.define('point', {
     id: {
       allowNull: false,
       autoIncrement: true,

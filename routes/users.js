@@ -42,27 +42,6 @@ const uploadImage = multer({
         }
     })
 });
-// const awsUpload = new awsService(bucket_name);
-/* GET users listing. */
-
-var query = 'select * from Users';
-
-// const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY; // Must be 256 bits (32 characters)
-// const IV_LENGTH = 16; // For AES, this is always 16
-
-function encrypt(text) {
-    var cipher = crypto.createCipheriv(secretKey.algorithm, new Buffer.from(secretKey.password), new Buffer.from(secretKey.vector))
-    var crypted = cipher.update(text, 'utf8', 'base64')
-    crypted += cipher.final('base64')
-    return crypted
-}
-
-function decrypt(text) {
-    var decipher = crypto.createDecipheriv(secretKey.algorithm, new Buffer.from(secretKey.password), new Buffer.from(secretKey.vector))
-    var dec = decipher.update(text, 'hex', 'base64')
-    dec += decipher.final('base64')
-    return dec
-}
 /**
  * @swagger
  * definitions:
@@ -479,7 +458,7 @@ router.get('/auth_record/:user_id', function (req, res) {
  */
 router.post('/', function (req, res) {
     console.log(new Date());
-    let salt = Math.round((new Date().valueOf()) * Math.random()) + "";
+    let salt = Math.round((new Date().valueOf()) * 0.2) + "";
 
     let response = {
         email: req.body.email,
