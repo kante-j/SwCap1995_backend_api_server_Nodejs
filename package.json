@@ -20,7 +20,7 @@
     "express-graphql": "^0.9.0",
     "express-paginate": "^1.0.0",
     "express-winston": "^4.0.3",
-    "firebase-admin": "^8.12.1",
+    "firebase-admin": "^11.4.1",
     "graphql": "^15.0.0",
     "http-errors": "~1.6.3",
     "image-diff": "^2.0.0",
